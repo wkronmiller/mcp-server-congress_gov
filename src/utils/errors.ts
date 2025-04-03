@@ -18,6 +18,16 @@ export class BaseError extends Error {
 }
 
 /**
+ * Error for invalid parameters passed to a function or tool.
+ * Maps typically to a 400 Bad Request or MCP InvalidParams.
+ */
+export class InvalidParameterError extends BaseError {
+    constructor(message: string, details?: unknown) {
+        super(message, 'INVALID_PARAMETER', 400, details);
+    }
+}
+
+/**
  * Error for validation failures (e.g., invalid input).
  * Maps typically to a 400 Bad Request or MCP InvalidParams.
  */

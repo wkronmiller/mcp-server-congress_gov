@@ -20,6 +20,7 @@ import { logger } from "./utils/index.js";
 import { ResourceNotFoundError, ResourceError, ApiError, RateLimitError } from "./utils/errors.js";
 // Import for tool registration
 import { registerTools } from "./tools/index.js";
+import { CongressApiService } from "./services/CongressApiService.js"; // Import service class
 // Resource Handlers (excluding search)
 import {
     handleBillResource,
@@ -56,47 +57,48 @@ export function createServer(): McpServer {
 
     // Get configuration
     const configManager = ConfigurationManager.getInstance();
-    // TODO: Use configManager if needed for resource handlers (e.g., API key implicitly used by CongressApiService)
+    // Instantiate the service here to pass to handlers
+    const congressApiService = new CongressApiService();
 
     // --- Register Resources ---
 
-    // Define read callbacks (placeholders, actual implementation in resourceHandlers.ts)
+    // Define read callbacks that accept and pass the service instance
     // Signatures need to match ReadResourceCallback / ReadResourceTemplateCallback
 
     const readBillCallback = async (uri: URL, variables: Variables, extra: RequestHandlerExtra): Promise<ReadResourceResult> => {
         logger.debug("Handling readBillCallback", { uri: uri.toString(), variables, sessionId: extra.sessionId });
-        // Call the actual handler which returns { contents: ... }
-        return handleBillResource(uri.toString());
+        // Pass the service instance to the handler
+        return handleBillResource(uri.toString(), congressApiService);
     };
 
     const readMemberCallback = async (uri: URL, variables: Variables, extra: RequestHandlerExtra): Promise<ReadResourceResult> => {
         logger.debug("Handling readMemberCallback", { uri: uri.toString(), variables, sessionId: extra.sessionId });
-        return handleMemberResource(uri.toString());
+        return handleMemberResource(uri.toString(), congressApiService);
     };
 
     const readCongressCallback = async (uri: URL, variables: Variables, extra: RequestHandlerExtra): Promise<ReadResourceResult> => {
         logger.debug("Handling readCongressCallback", { uri: uri.toString(), variables, sessionId: extra.sessionId });
-        return handleCongressResource(uri.toString());
+        return handleCongressResource(uri.toString(), congressApiService);
     };
 
     const readCommitteeCallback = async (uri: URL, variables: Variables, extra: RequestHandlerExtra): Promise<ReadResourceResult> => {
         logger.debug("Handling readCommitteeCallback", { uri: uri.toString(), variables, sessionId: extra.sessionId });
-        return handleCommitteeResource(uri.toString());
+        // Note: Committee handler might need congress from variables if URI template changes
+        return handleCommitteeResource(uri.toString(), congressApiService);
     };
 
-    // REMOVED first definition of readSearchCallback (was for template)
+    // Add callbacks for other specific resources (Amendment, Nomination, etc.) if implemented
 
     const readInfoOverviewCallback = async (uri: URL, extra: RequestHandlerExtra): Promise<ReadResourceResult> => {
         logger.debug("Handling readInfoOverviewCallback", { uri: uri.toString(), sessionId: extra.sessionId });
-        return handleInfoOverviewResource();
+        // Static handlers don't need the service instance
+        return handleInfoOverviewResource(uri.toString());
     };
 
     const readInfoCurrentCongressCallback = async (uri: URL, extra: RequestHandlerExtra): Promise<ReadResourceResult> => {
         logger.debug("Handling readInfoCurrentCongressCallback", { uri: uri.toString(), sessionId: extra.sessionId });
-        return handleInfoCurrentCongressResource();
+        return handleInfoCurrentCongressResource(uri.toString());
     };
-
-    // REMOVED search callbacks
 
 
     // Register Resource Templates (excluding search)

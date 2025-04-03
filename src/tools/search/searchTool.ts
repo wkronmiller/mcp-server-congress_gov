@@ -1,62 +1,36 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { McpError, ErrorCode, CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpError, ErrorCode, CallToolResult } from "@modelcontextprotocol/sdk/types.js"; // Ensure ErrorCode is imported
 import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js"; // For handler signature
 import { z } from "zod";
 import { TOOL_NAME, TOOL_DESCRIPTION, TOOL_PARAMS, CongressSearchParams } from "./searchParams.js";
-import congressApiServiceInstance from "../../services/CongressApiService.js"; // Use singleton instance
-import { ApiError, NotFoundError, RateLimitError, ValidationError } from "../../utils/errors.js"; // Import custom errors
+// Import the service class, not the singleton instance, if we instantiate it here or pass it in
+import { CongressApiService } from "../../services/CongressApiService.js";
+import { ApiError, NotFoundError, RateLimitError, ValidationError, InvalidParameterError } from "../../utils/errors.js"; // Import custom errors
 import { logger } from "../../utils/index.js";
-
-// Interface for the parameters passed to the API service's search method
-interface ApiSearchParams {
-    collection: string;
-    query: string;
-    limit?: number;
-    offset?: number;
-    sort?: string;
-    congress?: number;
-    type?: string;
-    fromDateTime?: string;
-    toDateTime?: string;
-    // Add other potential filter keys if needed
-    [key: string]: string | number | undefined; // Index signature
-}
-
+import { SearchParams } from "../../types/index.js"; // Import the SearchParams type
 
 /**
  * Registers and defines the handler for the congress_search tool.
+ * It validates input using Zod schema defined in searchParams.ts and calls
+ * the CongressApiService.searchCollection method.
  */
-export const searchTool = (server: McpServer): void => {
+export const searchTool = (server: McpServer, congressApiService: CongressApiService): void => { // Inject service instance
 
+    // Type assertion for args based on Zod schema
     const processSearchRequest = async (args: CongressSearchParams, extra: RequestHandlerExtra): Promise<CallToolResult> => {
-        // Updated logger call with context
         logger.debug(`Processing ${TOOL_NAME} request`, { args, sessionId: extra.sessionId });
         try {
-            // Prepare parameters for the API service call
-            const apiParams: ApiSearchParams = { // Use the defined interface
-                collection: args.collection,
-                query: args.query ?? '', // API might require empty string if no query
-                limit: args.limit,
-                offset: args.offset,
+            // Directly map validated args to the SearchParams type expected by the service
+            const searchParams: SearchParams = {
+                query: args.query,
+                filters: args.filters, // Pass the filters object directly
                 sort: args.sort,
-                // Add filters if the API service expects them flattened or structured differently
-                // For now, assuming the API service handles the filters object directly if needed
-                // or we pass them as top-level params if supported by the API endpoint
-                ...(args.filters?.congress && { congress: args.filters.congress }),
-                ...(args.filters?.type && { type: args.filters.type }),
-                ...(args.filters?.fromDateTime && { fromDateTime: args.filters.fromDateTime }),
-                ...(args.filters?.toDateTime && { toDateTime: args.filters.toDateTime }),
+                limit: args.limit,
+                offset: args.offset
             };
 
-            // Remove undefined optional params before sending to API service
-            Object.keys(apiParams).forEach((key) => {
-                if (apiParams[key] === undefined) {
-                    delete apiParams[key];
-                }
-            });
-
-            // Cast needed because search method expects specific type, but we built it dynamically
-            const result = await congressApiServiceInstance.search(apiParams as any);
+            // Call the refactored service method
+            const result = await congressApiService.searchCollection(args.collection, searchParams);
 
             // Format the successful output for MCP
             return {
@@ -67,17 +41,22 @@ export const searchTool = (server: McpServer): void => {
             };
 
         } catch (error) {
-            // Updated logger call with context and error
-            logger.error(`Error processing ${TOOL_NAME}`, error, { args, sessionId: extra.sessionId });
+            logger.error(`Error processing ${TOOL_NAME}`, { error: error instanceof Error ? error.message : String(error), args, sessionId: extra.sessionId });
 
             // Map errors to McpError
-            if (error instanceof ValidationError) { // Assuming Zod throws ValidationError
+            if (error instanceof InvalidParameterError) { // Handle invalid filters/sort from service
+                throw new McpError(ErrorCode.InvalidParams, error.message);
+            }
+            if (error instanceof ValidationError) { // Should be caught by Zod before handler, but handle defensively
                 throw new McpError(ErrorCode.InvalidParams, `Validation failed: ${error.message}`, error.details);
             }
-            if (error instanceof NotFoundError) { // Should not happen for search, but handle defensively
-                throw new McpError(ErrorCode.InvalidRequest, `Search failed: ${error.message}`); // Use InvalidRequest
+            if (error instanceof NotFoundError) { // Should not happen for list search, but handle defensively
+                // Use InvalidRequest for a search that finds nothing, or InternalError if it's unexpected
+                throw new McpError(ErrorCode.InvalidRequest, `Search failed: ${error.message}`);
             }
             if (error instanceof RateLimitError) {
+                // Use InternalError for rate limits, as the server itself isn't unavailable, just the upstream API
+                // Or potentially a custom error code if the spec allowed, but InternalError is safest.
                 throw new McpError(ErrorCode.InternalError, `Rate limit exceeded: ${error.message}`);
             }
             if (error instanceof ApiError) {
@@ -95,8 +74,10 @@ export const searchTool = (server: McpServer): void => {
         TOOL_NAME,
         TOOL_DESCRIPTION,
         TOOL_PARAMS, // Pass the Zod schema directly
-        processSearchRequest
+        processSearchRequest as any // Cast to any to satisfy SDK handler type if needed, ensure signature matches
     );
 
-    logger.info(`Tool registered`, { toolName: TOOL_NAME }); // Added context
+    logger.info(`Tool registered`, { toolName: TOOL_NAME });
 };
+
+// Note: Removed direct import/use of singleton. Service instance should be passed in.
