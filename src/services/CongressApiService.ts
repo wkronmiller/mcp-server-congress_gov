@@ -137,9 +137,9 @@ export class CongressApiService {
     const url = new URL(endpoint, this.baseUrl);
 
     // Add default params (api_key, format)
-    for (const [key, value] of this.defaultParams.entries()) {
+    this.defaultParams.forEach((value, key) => {
       url.searchParams.set(key, value);
-    }
+    });
 
     // Add additional params
     for (const [key, value] of Object.entries(params)) {
