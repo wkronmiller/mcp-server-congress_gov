@@ -54,13 +54,24 @@ This server acts as a bridge, allowing MCP clients (like AI assistants or develo
     npm start
     ```
 
-    (This runs `node dist/server.js`)
+    (This runs `node dist/server.js` with Streamable HTTP transport)
+
+    The server will start on port 3000 by default. You can set a custom port using the `PORT` environment variable:
+
+    ```bash
+    PORT=8080 npm start
+    ```
 
 Alternatively, run in development mode using `npm run dev` (uses `ts-node` and `nodemon`).
 
 ## Usage with MCP Client
 
-Connect your MCP client to the running server (e.g., via stdio if running locally).
+The server now uses **Streamable HTTP transport** instead of stdio. Connect your MCP client to:
+
+- **SSE Endpoint (for client connection):** `http://localhost:3000/sse`  
+- **Message Endpoint (for sending messages):** `http://localhost:3000/message`
+
+This implements the [MCP Streamable HTTP specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#streamable-http) using Server-Sent Events (SSE) for server-to-client communication and HTTP POST for client-to-server communication.
 
 ### Accessing Resources
 
