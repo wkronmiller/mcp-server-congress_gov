@@ -1,4 +1,4 @@
-﻿// Import config types for services as they are added
+// Import config types for services as they are added
 import {
   ExampleServiceConfig,
   RateLimitConfig,
@@ -70,7 +70,10 @@ export class ConfigurationManager {
         }
       } else {
         // Basic busy wait if locked (consider a more robust async lock if high contention is expected)
-        while (ConfigurationManager.instanceLock) {}
+        while (ConfigurationManager.instanceLock) {
+          // Small delay to avoid busy waiting
+          await new Promise((resolve) => setTimeout(resolve, 1));
+        }
         // Re-check instance after wait
         if (!ConfigurationManager.instance) {
           // This path is less likely but handles edge cases if lock logic needs refinement
