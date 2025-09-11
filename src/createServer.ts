@@ -29,9 +29,24 @@ import { CongressApiService } from "./services/CongressApiService.js"; // Import
 // Resource Handlers (excluding search)
 import {
   handleBillResource,
+  handleBillActionsResource,
+  handleBillAmendmentsResource,
+  handleBillCommitteesResource,
+  handleBillCosponsorsResource,
+  handleBillRelatedBillsResource,
+  handleBillSubjectsResource,
+  handleBillSummariesResource,
+  handleBillTextResource,
+  handleBillTitlesResource,
   handleMemberResource,
   handleCongressResource,
   handleCommitteeResource,
+  handleAmendmentResource,
+  handleAmendmentActionsResource,
+  handleAmendmentCosponsorsResource,
+  handleAmendmentAmendmentsResource,
+  handleAmendmentTextResource,
+  handleLawResource,
   // handleSearchResource, // Removed - functionality moved to tool
   handleInfoOverviewResource,
   handleInfoCurrentCongressResource,
@@ -83,6 +98,115 @@ export function createServer(): McpServer {
     return handleBillResource(uri.toString(), congressApiService);
   };
 
+  // Bill sub-resource callbacks
+  const readBillActionsCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillActionsCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleBillActionsResource(uri.toString(), congressApiService);
+  };
+
+  const readBillAmendmentsCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillAmendmentsCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleBillAmendmentsResource(uri.toString(), congressApiService);
+  };
+
+  const readBillCommitteesCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillCommitteesCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleBillCommitteesResource(uri.toString(), congressApiService);
+  };
+
+  const readBillCosponsorsCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillCosponsorsCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleBillCosponsorsResource(uri.toString(), congressApiService);
+  };
+
+  const readBillRelatedBillsCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillRelatedBillsCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleBillRelatedBillsResource(uri.toString(), congressApiService);
+  };
+
+  const readBillSubjectsCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillSubjectsCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleBillSubjectsResource(uri.toString(), congressApiService);
+  };
+
+  const readBillSummariesCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillSummariesCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleBillSummariesResource(uri.toString(), congressApiService);
+  };
+
+  const readBillTextCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillTextCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleBillTextResource(uri.toString(), congressApiService);
+  };
+
+  const readBillTitlesCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillTitlesCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleBillTitlesResource(uri.toString(), congressApiService);
+  };
+
   const readMemberCallback = async (
     uri: URL,
     variables: Variables,
@@ -103,7 +227,6 @@ export function createServer(): McpServer {
     logger.debug("Handling readCongressCallback", {
       uri: uri.toString(),
       variables,
-      
     });
     return handleCongressResource(uri.toString(), congressApiService);
   };
@@ -116,13 +239,77 @@ export function createServer(): McpServer {
     logger.debug("Handling readCommitteeCallback", {
       uri: uri.toString(),
       variables,
-      
     });
     // Note: Committee handler might need congress from variables if URI template changes
     return handleCommitteeResource(uri.toString(), congressApiService);
   };
 
-  // Add callbacks for other specific resources (Amendment, Nomination, etc.) if implemented
+  // Amendment callbacks
+  const readAmendmentCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readAmendmentCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleAmendmentResource(uri.toString(), congressApiService);
+  };
+
+  const readAmendmentActionsCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readAmendmentActionsCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleAmendmentActionsResource(uri.toString(), congressApiService);
+  };
+
+  const readAmendmentCosponsorsCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readAmendmentCosponsorsCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleAmendmentCosponsorsResource(
+      uri.toString(),
+      congressApiService
+    );
+  };
+
+  const readAmendmentAmendmentsCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readAmendmentAmendmentsCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleAmendmentAmendmentsResource(
+      uri.toString(),
+      congressApiService
+    );
+  };
+
+  const readAmendmentTextCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readAmendmentTextCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleAmendmentTextResource(uri.toString(), congressApiService);
+  };
 
   const readInfoOverviewCallback = async (
     uri: URL,
@@ -130,10 +317,21 @@ export function createServer(): McpServer {
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readInfoOverviewCallback", {
       uri: uri.toString(),
-      
     });
     // Static handlers don't need the service instance
     return handleInfoOverviewResource(uri.toString());
+  };
+
+  const readLawCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra
+  ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readLawCallback", {
+      uri: uri.toString(),
+      variables,
+    });
+    return handleLawResource(uri.toString(), congressApiService);
   };
 
   const readInfoCurrentCongressCallback = async (
@@ -142,7 +340,6 @@ export function createServer(): McpServer {
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readInfoCurrentCongressCallback", {
       uri: uri.toString(),
-      
     });
     return handleInfoCurrentCongressResource(uri.toString());
   };
@@ -160,6 +357,124 @@ export function createServer(): McpServer {
       mimeType: "application/json",
     },
     readBillCallback
+  );
+
+  // Bill Sub-Resources
+  server.resource(
+    "Bill Actions",
+    new ResourceTemplate(
+      "congress-gov://bill/{congress}/{billType}/{billNumber}/actions",
+      { list: undefined }
+    ),
+    {
+      description: "Actions taken on a specific bill",
+      mimeType: "application/json",
+    },
+    readBillActionsCallback
+  );
+
+  server.resource(
+    "Bill Amendments",
+    new ResourceTemplate(
+      "congress-gov://bill/{congress}/{billType}/{billNumber}/amendments",
+      { list: undefined }
+    ),
+    {
+      description: "Amendments to a specific bill",
+      mimeType: "application/json",
+    },
+    readBillAmendmentsCallback
+  );
+
+  server.resource(
+    "Bill Committees",
+    new ResourceTemplate(
+      "congress-gov://bill/{congress}/{billType}/{billNumber}/committees",
+      { list: undefined }
+    ),
+    {
+      description: "Committees that have worked on a specific bill",
+      mimeType: "application/json",
+    },
+    readBillCommitteesCallback
+  );
+
+  server.resource(
+    "Bill Cosponsors",
+    new ResourceTemplate(
+      "congress-gov://bill/{congress}/{billType}/{billNumber}/cosponsors",
+      { list: undefined }
+    ),
+    {
+      description: "Cosponsors of a specific bill",
+      mimeType: "application/json",
+    },
+    readBillCosponsorsCallback
+  );
+
+  server.resource(
+    "Bill Related Bills",
+    new ResourceTemplate(
+      "congress-gov://bill/{congress}/{billType}/{billNumber}/relatedbills",
+      { list: undefined }
+    ),
+    {
+      description: "Bills related to a specific bill",
+      mimeType: "application/json",
+    },
+    readBillRelatedBillsCallback
+  );
+
+  server.resource(
+    "Bill Subjects",
+    new ResourceTemplate(
+      "congress-gov://bill/{congress}/{billType}/{billNumber}/subjects",
+      { list: undefined }
+    ),
+    {
+      description: "Subject areas and policy topics of a specific bill",
+      mimeType: "application/json",
+    },
+    readBillSubjectsCallback
+  );
+
+  server.resource(
+    "Bill Summaries",
+    new ResourceTemplate(
+      "congress-gov://bill/{congress}/{billType}/{billNumber}/summaries",
+      { list: undefined }
+    ),
+    {
+      description: "Summaries of a specific bill",
+      mimeType: "application/json",
+    },
+    readBillSummariesCallback
+  );
+
+  server.resource(
+    "Bill Text",
+    new ResourceTemplate(
+      "congress-gov://bill/{congress}/{billType}/{billNumber}/text",
+      { list: undefined }
+    ),
+    {
+      description: "Full text of a specific bill",
+      mimeType: "application/json",
+    },
+    readBillTextCallback
+  );
+
+  server.resource(
+    "Bill Titles",
+    new ResourceTemplate(
+      "congress-gov://bill/{congress}/{billType}/{billNumber}/titles",
+      { list: undefined }
+    ),
+    {
+      description: "Titles of a specific bill",
+      mimeType: "application/json",
+    },
+    readBillTitlesCallback
   );
 
   server.resource(
@@ -197,6 +512,110 @@ export function createServer(): McpServer {
       mimeType: "application/json",
     },
     readCommitteeCallback
+  );
+
+  // Amendment Resources
+  server.resource(
+    "Amendment Information",
+    new ResourceTemplate(
+      "congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}",
+      { list: undefined }
+    ),
+    {
+      description:
+        "Information about a specific amendment by Congress, type, and number",
+      mimeType: "application/json",
+    },
+    readAmendmentCallback
+  );
+
+  server.resource(
+    "Amendment Actions",
+    new ResourceTemplate(
+      "congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}/actions",
+      { list: undefined }
+    ),
+    {
+      description: "Actions taken on a specific amendment",
+      mimeType: "application/json",
+    },
+    readAmendmentActionsCallback
+  );
+
+  server.resource(
+    "Amendment Cosponsors",
+    new ResourceTemplate(
+      "congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}/cosponsors",
+      { list: undefined }
+    ),
+    {
+      description: "Cosponsors of a specific amendment",
+      mimeType: "application/json",
+    },
+    readAmendmentCosponsorsCallback
+  );
+
+  server.resource(
+    "Amendment Amendments",
+    new ResourceTemplate(
+      "congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}/amendments",
+      { list: undefined }
+    ),
+    {
+      description: "Amendments to a specific amendment",
+      mimeType: "application/json",
+    },
+    readAmendmentAmendmentsCallback
+  );
+
+  server.resource(
+    "Amendment Text",
+    new ResourceTemplate(
+      "congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}/text",
+      { list: undefined }
+    ),
+    {
+      description: "Text of a specific amendment",
+      mimeType: "application/json",
+    },
+    readAmendmentTextCallback
+  );
+
+  // Law Resources
+  server.resource(
+    "Law Information",
+    new ResourceTemplate(
+      "congress-gov://law/{congress}/{lawType}/{lawNumber}",
+      { list: undefined }
+    ),
+    {
+      description:
+        "Information about a specific law by Congress, type, and number",
+      mimeType: "application/json",
+    },
+    readLawCallback
+  );
+
+  server.resource(
+    "Laws by Congress and Type",
+    new ResourceTemplate("congress-gov://law/{congress}/{lawType}", {
+      list: undefined,
+    }),
+    {
+      description: "List of laws by Congress and type (public/private)",
+      mimeType: "application/json",
+    },
+    readLawCallback
+  );
+
+  server.resource(
+    "Laws by Congress",
+    new ResourceTemplate("congress-gov://law/{congress}", { list: undefined }),
+    {
+      description: "List of all laws by Congress number",
+      mimeType: "application/json",
+    },
+    readLawCallback
   );
 
   // REMOVED search resource registrations

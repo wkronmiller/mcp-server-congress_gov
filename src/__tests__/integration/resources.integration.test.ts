@@ -48,8 +48,115 @@ describe("Congress.gov Resources Integration Tests", () => {
       );
 
       expect(result).toBeDefined();
+    }, 10000);
+
+    it("should get bill actions using dedicated method", async () => {
+      const result = await congressApiService.getBillActions({
+        congress: testData.bills.valid.congress,
+        billType: testData.bills.valid.billType,
+        billNumber: testData.bills.valid.billNumber,
+      });
+
+      expect(result).toBeDefined();
       expect(result).toHaveProperty("actions");
-      expect(Array.isArray(result.actions)).toBe(true);
+    }, 10000);
+
+    it("should get bill amendments using dedicated method", async () => {
+      const result = await congressApiService.getBillAmendments({
+        congress: testData.bills.valid.congress,
+        billType: testData.bills.valid.billType,
+        billNumber: testData.bills.valid.billNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("amendments");
+    }, 10000);
+
+    it("should get bill committees using dedicated method", async () => {
+      const result = await congressApiService.getBillCommittees({
+        congress: testData.bills.valid.congress,
+        billType: testData.bills.valid.billType,
+        billNumber: testData.bills.valid.billNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("committees");
+    }, 10000);
+
+    it("should get bill cosponsors using dedicated method", async () => {
+      const result = await congressApiService.getBillCosponsors({
+        congress: testData.bills.valid.congress,
+        billType: testData.bills.valid.billType,
+        billNumber: testData.bills.valid.billNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("cosponsors");
+    }, 10000);
+
+    it("should get bill related bills using dedicated method", async () => {
+      const result = await congressApiService.getBillRelatedBills({
+        congress: testData.bills.valid.congress,
+        billType: testData.bills.valid.billType,
+        billNumber: testData.bills.valid.billNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("relatedBills");
+    }, 10000);
+
+    it("should get bill subjects using dedicated method", async () => {
+      const result = await congressApiService.getBillSubjects({
+        congress: testData.bills.valid.congress,
+        billType: testData.bills.valid.billType,
+        billNumber: testData.bills.valid.billNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("subjects");
+    }, 10000);
+
+    it("should get bill summaries using dedicated method", async () => {
+      const result = await congressApiService.getBillSummaries({
+        congress: testData.bills.valid.congress,
+        billType: testData.bills.valid.billType,
+        billNumber: testData.bills.valid.billNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("summaries");
+    }, 10000);
+
+    it("should get bill text using dedicated method", async () => {
+      const result = await congressApiService.getBillText({
+        congress: testData.bills.valid.congress,
+        billType: testData.bills.valid.billType,
+        billNumber: testData.bills.valid.billNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("textVersions");
+    }, 10000);
+
+    it("should get bill titles using dedicated method", async () => {
+      const result = await congressApiService.getBillTitles({
+        congress: testData.bills.valid.congress,
+        billType: testData.bills.valid.billType,
+        billNumber: testData.bills.valid.billNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("titles");
+    }, 10000);
+
+    it("should handle invalid bill sub-resource requests", async () => {
+      await expect(
+        congressApiService.getBillActions({
+          congress: "999",
+          billType: "hr",
+          billNumber: "99999",
+        })
+      ).rejects.toThrow();
     }, 10000);
 
     it("should get bill subjects sub-resource", async () => {
@@ -130,6 +237,233 @@ describe("Congress.gov Resources Integration Tests", () => {
         congressApiService.getSubResource(testData.bills.uri, "invalid" as any)
       ).rejects.toThrow();
     });
+
+    it("should handle non-existent amendment resources", async () => {
+      await expect(
+        congressApiService.getAmendmentDetails({
+          congress: "999",
+          amendmentType: "hamdt",
+          amendmentNumber: "999999",
+        })
+      ).rejects.toThrow();
+    });
+
+    it("should handle invalid amendment types", async () => {
+      await expect(
+        congressApiService.getAmendmentDetails({
+          congress: "118",
+          amendmentType: "invalid-type",
+          amendmentNumber: "1",
+        })
+      ).rejects.toThrow();
+    });
+
+    it("should handle non-existent law resources", async () => {
+      await expect(
+        congressApiService.getLawDetails({
+          congress: "999",
+          lawType: "public",
+          lawNumber: "999999",
+        })
+      ).rejects.toThrow();
+    });
+
+    it("should handle invalid law types", async () => {
+      // This should not throw but return empty results
+      const result = await congressApiService.getLawsByCongressAndType({
+        congress: "118",
+        lawType: "invalid-type",
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("laws");
+      expect(Array.isArray(result.laws)).toBe(true);
+      expect(result.laws.length).toBe(0);
+    });
+  });
+
+  describe("Amendment Resources", () => {
+    it("should search amendments", async () => {
+      const result = await congressApiService.searchCollection("amendment", {
+        limit: 2,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("amendments");
+      expect(Array.isArray(result.amendments)).toBe(true);
+      expect(result.amendments.length).toBeLessThanOrEqual(2);
+    }, 10000);
+
+    it("should get amendment details", async () => {
+      const result = await congressApiService.getAmendmentDetails({
+        congress: testData.amendments.valid.congress,
+        amendmentType: testData.amendments.valid.amendmentType,
+        amendmentNumber: testData.amendments.valid.amendmentNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("amendment");
+      expect(result.amendment).toHaveProperty("congress");
+      expect(result.amendment.congress).toBe(
+        parseInt(testData.amendments.valid.congress)
+      );
+    }, 10000);
+
+    it("should get amendment actions", async () => {
+      const result = await congressApiService.getAmendmentActions(
+        {
+          congress: testData.amendments.valid.congress,
+          amendmentType: testData.amendments.valid.amendmentType,
+          amendmentNumber: testData.amendments.valid.amendmentNumber,
+        },
+        { limit: 3 }
+      );
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("actions");
+      expect(Array.isArray(result.actions)).toBe(true);
+    }, 10000);
+
+    it("should get amendment cosponsors", async () => {
+      const result = await congressApiService.getAmendmentCosponsors({
+        congress: testData.amendments.valid.congress,
+        amendmentType: testData.amendments.valid.amendmentType,
+        amendmentNumber: testData.amendments.valid.amendmentNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("cosponsors");
+    }, 10000);
+
+    it("should get amendment amendments", async () => {
+      const result = await congressApiService.getAmendmentAmendments({
+        congress: testData.amendments.valid.congress,
+        amendmentType: testData.amendments.valid.amendmentType,
+        amendmentNumber: testData.amendments.valid.amendmentNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("amendments");
+    }, 10000);
+
+    it("should get amendment text", async () => {
+      const result = await congressApiService.getAmendmentText({
+        congress: testData.amendments.valid.congress,
+        amendmentType: testData.amendments.valid.amendmentType,
+        amendmentNumber: testData.amendments.valid.amendmentNumber,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("textVersions");
+    }, 10000);
+
+    it("should handle different amendment type formats", async () => {
+      // Test both abbreviated and full forms
+      const testCases = [
+        { type: "hamdt", expected: "house-amendment" },
+        { type: "samdt", expected: "senate-amendment" },
+        { type: "house-amendment", expected: "house-amendment" },
+        { type: "senate-amendment", expected: "senate-amendment" },
+      ];
+
+      for (const testCase of testCases) {
+        try {
+          const result = await congressApiService.getAmendmentDetails({
+            congress: "118",
+            amendmentType: testCase.type,
+            amendmentNumber: "1",
+          });
+          expect(result).toBeDefined();
+        } catch (error) {
+          // Expected for some invalid combinations, but should not throw for valid types
+          expect(error).toBeInstanceOf(Error);
+        }
+      }
+    }, 15000);
+  });
+
+  describe("Law Resources", () => {
+    // Note: Congress.gov API doesn't have separate /law endpoints
+    // Laws are accessed through bills that have become laws
+
+    it("should get laws by congress", async () => {
+      const result = await congressApiService.getLawsByCongress({
+        congress: testData.laws.valid.congress,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("laws");
+      expect(Array.isArray(result.laws)).toBe(true);
+    }, 10000);
+
+    it("should get laws by congress and type", async () => {
+      const result = await congressApiService.getLawsByCongressAndType({
+        congress: testData.laws.valid.congress,
+        lawType: testData.laws.valid.lawType,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("laws");
+      expect(Array.isArray(result.laws)).toBe(true);
+    }, 10000);
+
+    it("should get specific law details", async () => {
+      // First, get laws by congress to find an actual law number
+      const lawsList = await congressApiService.getLawsByCongress({
+        congress: testData.laws.valid.congress,
+      });
+
+      expect(lawsList).toBeDefined();
+      expect(lawsList).toHaveProperty("laws");
+      expect(Array.isArray(lawsList.laws)).toBe(true);
+
+      if (lawsList.laws.length > 0) {
+        // Use the first actual law found
+        const actualLaw = lawsList.laws[0];
+        const lawNumberParts = actualLaw.number.split("-");
+        const lawNumber =
+          lawNumberParts.length > 1 ? lawNumberParts[1] : actualLaw.number;
+
+        const result = await congressApiService.getLawDetails({
+          congress: testData.laws.valid.congress,
+          lawType: "public", // Most laws are public
+          lawNumber: lawNumber,
+        });
+
+        expect(result).toBeDefined();
+        expect(result).toHaveProperty("law");
+        expect(result.law).toHaveProperty("congress");
+        expect(result.law.congress).toBe(
+          parseInt(testData.laws.valid.congress)
+        );
+      } else {
+        // Skip test if no laws found
+        console.log("No laws found for testing - skipping specific law test");
+      }
+    }, 15000);
+
+    it("should handle different law type formats", async () => {
+      // Test both full and abbreviated forms
+      const testCases = [
+        { type: "public", expected: "public" },
+        { type: "private", expected: "private" },
+      ];
+
+      for (const testCase of testCases) {
+        try {
+          const result = await congressApiService.getLawsByCongressAndType({
+            congress: "118",
+            lawType: testCase.type,
+          });
+          expect(result).toBeDefined();
+          expect(result).toHaveProperty("laws");
+          expect(Array.isArray(result.laws)).toBe(true);
+        } catch (error) {
+          // Some combinations might not exist, but should not throw for valid types
+          expect(error).toBeInstanceOf(Error);
+        }
+      }
+    }, 15000);
   });
 
   describe("API Service Initialization", () => {

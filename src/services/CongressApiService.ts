@@ -8,6 +8,9 @@ import {
   CongressResourceParams,
   CommitteeResourceParams,
   AmendmentResourceParams, // Assuming these exist or will be created
+  LawResourceParams,
+  LawListParams,
+  LawCongressParams,
   PaginationParams,
   SearchParams, // Define these types
   // Add other specific param types as needed: NominationResourceParams, TreatyResourceParams, etc.
@@ -246,6 +249,202 @@ export class CongressApiService {
     return this.executeRequest(endpoint);
   }
 
+  public async getAmendmentActions(
+    params: AmendmentResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/amendment/${params.congress}/${params.amendmentType}/${params.amendmentNumber}/actions`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getAmendmentCosponsors(
+    params: AmendmentResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/amendment/${params.congress}/${params.amendmentType}/${params.amendmentNumber}/cosponsors`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getAmendmentAmendments(
+    params: AmendmentResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/amendment/${params.congress}/${params.amendmentType}/${params.amendmentNumber}/amendments`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getAmendmentText(
+    params: AmendmentResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/amendment/${params.congress}/${params.amendmentType}/${params.amendmentNumber}/text`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  // --- Law Service Methods ---
+  // Note: Based on API testing, Congress.gov doesn't have separate /law endpoints
+  // Instead, laws are accessed through bills that have become laws
+  // We need to search for bills with laws attached to them
+
+  public async getLawDetails(params: LawResourceParams): Promise<any> {
+    // Search for bills that became this law (since direct law endpoints don't exist)
+    const searchEndpoint = `/bill/${params.congress}`;
+    const queryParams: Record<string, string | number> = {
+      limit: 250, // Get more results to find the specific law
+    };
+
+    const results = await this.executeRequest(searchEndpoint, queryParams);
+
+    // Filter results to find bills that became the specific law
+    if (results && results.bills) {
+      const lawNumberStr = `${params.congress}-${params.lawNumber}`;
+      const matchingBills = results.bills.filter(
+        (bill: any) =>
+          bill.laws &&
+          bill.laws.some(
+            (law: any) =>
+              law.number === lawNumberStr &&
+              law.type.toLowerCase().includes(params.lawType.toLowerCase())
+          )
+      );
+
+      if (matchingBills.length > 0) {
+        const matchingLaw = matchingBills[0].laws.find(
+          (law: any) =>
+            law.number === lawNumberStr &&
+            law.type.toLowerCase().includes(params.lawType.toLowerCase())
+        );
+
+        return {
+          law: {
+            congress: parseInt(params.congress),
+            number: params.lawNumber,
+            type: params.lawType,
+            title: matchingBills[0].title,
+            originChamber: matchingBills[0].originChamber,
+            updateDate: matchingBills[0].updateDate,
+            url: matchingLaw ? matchingLaw.url : undefined,
+            bill: matchingBills[0],
+          },
+        };
+      }
+    }
+
+    // If no matching law found, throw NotFoundError
+    throw new NotFoundError(
+      `Law ${params.congress}-${params.lawNumber} (${params.lawType}) not found`
+    );
+  }
+
+  public async getLawsByCongressAndType(params: LawListParams): Promise<any> {
+    // Search bills that have become laws of the specified type
+    const endpoint = `/bill/${params.congress}`;
+    const queryParams: Record<string, string | number> = {
+      limit: 250, // Get more results to find laws
+    };
+
+    const results = await this.executeRequest(endpoint, queryParams);
+
+    if (results && results.bills) {
+      // Filter to only bills that have become laws of the specified type
+      const lawBills = results.bills.filter(
+        (bill: any) =>
+          bill.laws &&
+          bill.laws.some((law: any) =>
+            law.type.toLowerCase().includes(params.lawType.toLowerCase())
+          )
+      );
+
+      // Transform to law format
+      const laws = lawBills.map((bill: any) => {
+        const matchingLaw = bill.laws.find((law: any) =>
+          law.type.toLowerCase().includes(params.lawType.toLowerCase())
+        );
+        return {
+          congress: bill.congress,
+          number: matchingLaw.number.split("-")[1], // Extract number from "118-123" format
+          type: params.lawType,
+          title: bill.title,
+          originChamber: bill.originChamber,
+          updateDate: bill.updateDate,
+          bill: bill,
+        };
+      });
+
+      return {
+        laws: laws,
+        pagination: results.pagination,
+        request: results.request,
+      };
+    }
+
+    return { laws: [] };
+  }
+
+  public async getLawsByCongress(params: LawCongressParams): Promise<any> {
+    // Get all bills that have become laws in the congress
+    const endpoint = `/bill/${params.congress}`;
+    const queryParams: Record<string, string | number> = {
+      limit: 250, // Get more results
+    };
+
+    const results = await this.executeRequest(endpoint, queryParams);
+
+    if (results && results.bills) {
+      // Filter to only bills that have become laws
+      const lawBills = results.bills.filter(
+        (bill: any) => bill.laws && bill.laws.length > 0
+      );
+
+      // Transform to law format
+      const laws = lawBills.map((bill: any) => ({
+        congress: bill.congress,
+        number: bill.laws[0].number,
+        type: bill.laws[0].type,
+        title: bill.title,
+        originChamber: bill.originChamber,
+        updateDate: bill.updateDate,
+        bill: bill,
+      }));
+
+      return {
+        laws: laws,
+        pagination: results.pagination,
+        request: results.request,
+      };
+    }
+
+    return { laws: [] };
+  }
+
   // Add methods for other specific types as needed, mapping params to endpoint structure
   // public async getNominationDetails(params: NominationResourceParams): Promise<any> { ... }
   // public async getTreatyDetails(params: TreatyResourceParams): Promise<any> { ... }
@@ -368,12 +567,145 @@ export class CongressApiService {
     return this.executeRequest(endpoint, queryParams);
   }
 
+  // --- Bill Sub-Resource Methods ---
+
+  public async getBillActions(
+    params: BillResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}/actions`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getBillAmendments(
+    params: BillResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}/amendments`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getBillCommittees(
+    params: BillResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}/committees`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getBillCosponsors(
+    params: BillResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}/cosponsors`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getBillRelatedBills(
+    params: BillResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}/relatedbills`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getBillSubjects(
+    params: BillResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}/subjects`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getBillSummaries(
+    params: BillResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}/summaries`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getBillText(
+    params: BillResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}/text`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getBillTitles(
+    params: BillResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}/titles`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
   // --- Add specific wrappers for getSubResource if needed for clarity or type safety ---
   // Example:
-  // public async getBillActions(params: BillResourceParams, pagination?: PaginationParams): Promise<any> {
-  //     const parentUri = `congress-gov://bill/${params.congress}/${params.billType}/${params.billNumber}`;
-  //     return this.getSubResource(parentUri, 'actions', pagination);
-  // }
   // public async getMemberSponsoredLegislation(params: MemberResourceParams, pagination?: PaginationParams): Promise<any> {
   //     const parentUri = `congress-gov://member/${params.memberId}`;
   //     return this.getSubResource(parentUri, 'sponsored-legislation', pagination);
