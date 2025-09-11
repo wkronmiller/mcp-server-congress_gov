@@ -42,7 +42,7 @@ export const searchTool = (
   ): Promise<CallToolResult> => {
     logger.debug(`Processing ${TOOL_NAME} request`, {
       args,
-      sessionId: extra.sessionId,
+      
     });
     try {
       // Directly map validated args to the SearchParams type expected by the service
@@ -73,7 +73,7 @@ export const searchTool = (
       logger.error(`Error processing ${TOOL_NAME}`, {
         error: error instanceof Error ? error.message : String(error),
         args,
-        sessionId: extra.sessionId,
+        
       });
 
       // Map errors to McpError

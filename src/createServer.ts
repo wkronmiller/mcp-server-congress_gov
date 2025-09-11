@@ -78,7 +78,6 @@ export function createServer(): McpServer {
     logger.debug("Handling readBillCallback", {
       uri: uri.toString(),
       variables,
-      sessionId: extra.sessionId,
     });
     // Pass the service instance to the handler
     return handleBillResource(uri.toString(), congressApiService);
@@ -92,7 +91,6 @@ export function createServer(): McpServer {
     logger.debug("Handling readMemberCallback", {
       uri: uri.toString(),
       variables,
-      sessionId: extra.sessionId,
     });
     return handleMemberResource(uri.toString(), congressApiService);
   };
@@ -105,7 +103,7 @@ export function createServer(): McpServer {
     logger.debug("Handling readCongressCallback", {
       uri: uri.toString(),
       variables,
-      sessionId: extra.sessionId,
+      
     });
     return handleCongressResource(uri.toString(), congressApiService);
   };
@@ -118,7 +116,7 @@ export function createServer(): McpServer {
     logger.debug("Handling readCommitteeCallback", {
       uri: uri.toString(),
       variables,
-      sessionId: extra.sessionId,
+      
     });
     // Note: Committee handler might need congress from variables if URI template changes
     return handleCommitteeResource(uri.toString(), congressApiService);
@@ -132,7 +130,7 @@ export function createServer(): McpServer {
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readInfoOverviewCallback", {
       uri: uri.toString(),
-      sessionId: extra.sessionId,
+      
     });
     // Static handlers don't need the service instance
     return handleInfoOverviewResource(uri.toString());
@@ -144,7 +142,7 @@ export function createServer(): McpServer {
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readInfoCurrentCongressCallback", {
       uri: uri.toString(),
-      sessionId: extra.sessionId,
+      
     });
     return handleInfoCurrentCongressResource(uri.toString());
   };

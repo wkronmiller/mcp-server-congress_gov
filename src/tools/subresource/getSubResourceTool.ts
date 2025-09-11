@@ -48,7 +48,7 @@ export const getSubResourceTool = (
   ): Promise<CallToolResult> => {
     logger.debug(`Processing ${TOOL_NAME} request`, {
       args,
-      sessionId: extra.sessionId,
+      
     });
     try {
       // 1. Prepare pagination parameters
@@ -77,7 +77,7 @@ export const getSubResourceTool = (
       logger.error(`Error processing ${TOOL_NAME}`, {
         error: error instanceof Error ? error.message : String(error),
         args,
-        sessionId: extra.sessionId,
+        
       });
 
       // Map errors to McpError
