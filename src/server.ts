@@ -1,17 +1,24 @@
 import express, { Request, Response } from "express";
+import cors from "cors";
 import { createServer } from "./createServer.js";
 import { logger } from "./utils/index.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { createApiRouter } from "./api/index.js";
 
 const main = async () => {
   try {
     // Get port from environment variable or use default
     const port = parseInt(process.env.PORT || "3000", 10);
 
-    logger.info("Starting MCP server with Streamable HTTP transport", { port });
+    logger.info("Starting MCP server with Streamable HTTP transport and REST API", { port });
 
     // Create Express app for HTTP server
     const app = express();
+
+    // Add middleware
+    app.use(cors()); // Enable CORS for REST API
+    app.use(express.json()); // Parse JSON bodies
+    app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
     // Store active server instances by session ID
     const servers = new Map();
@@ -86,12 +93,21 @@ const main = async () => {
       }
     });
 
+    // --- REST API Routes ---
+    app.use("/api", createApiRouter());
+
     // Start HTTP server
     app.listen(port, () => {
-      logger.info("MCP Server with Streamable HTTP transport started", {
+      logger.info("MCP Server with Streamable HTTP transport and REST API started", {
         port,
-        sseEndpoint: `http://localhost:${port}/sse`,
-        messageEndpoint: `http://localhost:${port}/message`,
+        mcpEndpoints: {
+          sseEndpoint: `http://localhost:${port}/sse`,
+          messageEndpoint: `http://localhost:${port}/message`,
+        },
+        restApiEndpoints: {
+          apiRoot: `http://localhost:${port}/api`,
+          documentation: `http://localhost:${port}/api`
+        }
       });
     });
   } catch (error) {
