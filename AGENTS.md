@@ -6,7 +6,11 @@
 - **Dev**: `npm run dev` - Runs with nodemon and ts-node for hot reload
 - **Lint**: `npm run lint` - ESLint check with TypeScript rules
 - **Format**: `npm run format` - Auto-format with Prettier
-- **Test**: No tests configured yet (npm test exits with error)
+- **Test**: `npm test` - Jest with ts-jest and ESM support
+- **Test Single**: `npm test -- --testNamePattern="pattern"` or `npm test -- path/to/test.test.ts`
+- **Test Integration**: `npm test:integration` - Integration tests only
+- **Test Watch**: `npm test:watch` - Watch mode for development
+- **Test Coverage**: `npm test:coverage` - Generate coverage reports
 - **Start**: `npm start` - Runs compiled server from dist/
 
 ## Code Style Guidelines
