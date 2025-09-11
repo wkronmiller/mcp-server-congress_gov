@@ -29,7 +29,7 @@ describe("Zod Schema Validation for Congress Filter", () => {
 
       const result = SearchFiltersSchema.safeParse(filtersWithCongress);
       expect(result.success).toBe(false);
-      
+
       if (!result.success) {
         expect(result.error.issues).toHaveLength(1);
         expect(result.error.issues[0].code).toBe("unrecognized_keys");
@@ -48,7 +48,7 @@ describe("Zod Schema Validation for Congress Filter", () => {
 
       const result = SearchFiltersSchema.safeParse(filtersWithUnknownKeys);
       expect(result.success).toBe(false);
-      
+
       if (!result.success) {
         expect(result.error.issues).toHaveLength(1);
         expect(result.error.issues[0].code).toBe("unrecognized_keys");
@@ -66,10 +66,12 @@ describe("Zod Schema Validation for Congress Filter", () => {
 
       const result = SearchFiltersSchema.safeParse(filtersWithCongress);
       expect(result.success).toBe(false);
-      
+
       if (!result.success) {
         const errorMessage = result.error.issues[0].message;
-        expect(errorMessage).toContain("Unrecognized key(s) in object: 'congress'");
+        expect(errorMessage).toContain(
+          "Unrecognized key(s) in object: 'congress'"
+        );
       }
     });
   });

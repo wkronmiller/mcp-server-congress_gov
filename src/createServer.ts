@@ -103,7 +103,6 @@ export function createServer(): McpServer {
     logger.debug("Handling readCongressCallback", {
       uri: uri.toString(),
       variables,
-      
     });
     return handleCongressResource(uri.toString(), congressApiService);
   };
@@ -116,7 +115,6 @@ export function createServer(): McpServer {
     logger.debug("Handling readCommitteeCallback", {
       uri: uri.toString(),
       variables,
-      
     });
     // Note: Committee handler might need congress from variables if URI template changes
     return handleCommitteeResource(uri.toString(), congressApiService);
@@ -130,7 +128,6 @@ export function createServer(): McpServer {
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readInfoOverviewCallback", {
       uri: uri.toString(),
-      
     });
     // Static handlers don't need the service instance
     return handleInfoOverviewResource(uri.toString());
@@ -142,7 +139,6 @@ export function createServer(): McpServer {
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readInfoCurrentCongressCallback", {
       uri: uri.toString(),
-      
     });
     return handleInfoCurrentCongressResource(uri.toString());
   };

@@ -42,7 +42,6 @@ export const searchTool = (
   ): Promise<CallToolResult> => {
     logger.debug(`Processing ${TOOL_NAME} request`, {
       args,
-      
     });
     try {
       // Directly map validated args to the SearchParams type expected by the service
@@ -73,16 +72,33 @@ export const searchTool = (
       logger.error(`Error processing ${TOOL_NAME}`, {
         error: error instanceof Error ? error.message : String(error),
         args,
-        
       });
 
       // Map errors to McpError
       if (error instanceof InvalidParameterError) {
-        // Handle invalid filters/sort from service
+        // Check if this is specifically about congress filtering to provide enhanced guidance
+        if (error.message.includes("congress")) {
+          throw new McpError(
+            ErrorCode.InvalidParams,
+            `${error.message}\n\n*** CRITICAL API LIMITATION ***\nThe Congress.gov API does not support 'congress' filtering in general searches. This is a fundamental API architecture limitation:\n- ❌ Not supported: /v3/bill?congress=117\n- ✅ Supported: /v3/bill/117 (congress-specific endpoint)\n\nTo search within a specific congress, you need to:\n1. Use this search tool WITHOUT congress filters\n2. Manually filter results by the 'congress' field in the response\n3. Or use congress-specific API endpoints (not available in this tool)`
+          );
+        }
+        // Handle other invalid filters/sort from service
         throw new McpError(ErrorCode.InvalidParams, error.message);
       }
       if (error instanceof ValidationError) {
         // Should be caught by Zod before handler, but handle defensively
+        // Check if this is a Zod validation error about congress filtering
+        if (
+          error.message.includes("congress") ||
+          error.message.includes("Unrecognized key")
+        ) {
+          throw new McpError(
+            ErrorCode.InvalidParams,
+            `Validation failed: ${error.message}\n\n*** CONGRESS FILTERING NOT SUPPORTED ***\nThe 'congress' parameter is intentionally excluded from search filters because the Congress.gov API does not support congress filtering in general collection searches. This is enforced by strict schema validation.\n\nAlternatives:\n1. Search without congress filters and filter results manually\n2. Use congress-specific API endpoints (requires different tooling)\n\nSee tool description for more details about this API limitation.`,
+            error.details
+          );
+        }
         throw new McpError(
           ErrorCode.InvalidParams,
           `Validation failed: ${error.message}`,

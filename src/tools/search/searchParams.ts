@@ -2,7 +2,13 @@ import { z } from "zod";
 
 export const TOOL_NAME = "congress_search";
 
-export const TOOL_DESCRIPTION = `Searches or lists items within a specified Congress.gov collection (e.g., 'bill', 'member'). **!!! CRITICAL WORKFLOW STEP !!!** This tool is **REQUIRED** as the **FIRST STEP** to locate specific entities and retrieve their unique identifiers (like memberId, bill number/type/congress). These identifiers are **ESSENTIAL** inputs for other tools like 'congress_getSubResource'. **FAILURE TO USE THIS FIRST WILL LIKELY CAUSE SUBSEQUENT OPERATIONS TO FAIL.** Returns a list; be prepared to handle multiple results and extract the specific ID needed. **WARNING:** Filtering by 'congress' using the 'filters' parameter is **NOT SUPPORTED** by the underlying API for general collection searches (e.g., /v3/bill) and will be ignored; congress-specific filtering requires using specific API paths not directly targeted by this tool.`;
+export const TOOL_DESCRIPTION = `Searches or lists items within a specified Congress.gov collection (e.g., 'bill', 'member'). **!!! CRITICAL WORKFLOW STEP !!!** This tool is **REQUIRED** as the **FIRST STEP** to locate specific entities and retrieve their unique identifiers (like memberId, bill number/type/congress). These identifiers are **ESSENTIAL** inputs for other tools like 'congress_getSubResource'. **FAILURE TO USE THIS FIRST WILL LIKELY CAUSE SUBSEQUENT OPERATIONS TO FAIL.** Returns a list; be prepared to handle multiple results and extract the specific ID needed. 
+
+**!!! CRITICAL API LIMITATION !!!** Filtering by 'congress' using the 'filters' parameter is **COMPLETELY UNSUPPORTED** by the underlying Congress.gov API for general collection searches (e.g., /v3/bill, /v3/member) and will be **REJECTED** with an error. This is a fundamental limitation of the API architecture:
+- ❌ Does NOT work: /v3/bill?congress=117 
+- ✅ Works instead: /v3/bill/117 (specific congress endpoint)
+
+Congress-specific filtering requires using dedicated API paths (e.g., /v3/bill/117) which this search tool cannot construct. To find items from a specific congress, use this tool without congress filters and then manually filter the results by the 'congress' field in the response data.`;
 
 // Define allowed collections based on API documentation
 const SearchableCollectionEnum = z
@@ -33,8 +39,12 @@ const SortOrderEnum = z
   );
 
 // Define optional filters (can be expanded based on API capabilities per collection)
-// NOTE: Filtering by 'congress' using this filter object is NOT supported by the underlying API for base collection searches (e.g., /v3/bill).
-// The API ignores the 'congress' query parameter in these cases. Congress filtering typically happens via the URL path (e.g., /v3/bill/117), which this tool does not construct.
+// *** CRITICAL API LIMITATION ***
+// Filtering by 'congress' using this filter object is COMPLETELY UNSUPPORTED by the underlying Congress.gov API
+// for base collection searches (e.g., /v3/bill, /v3/member). The API architecture requires congress-specific
+// paths (e.g., /v3/bill/117) rather than query parameters for congress filtering.
+// Any attempt to add 'congress' as a filter will be REJECTED by the strict Zod schema below.
+// This limitation is intentional and reflects the underlying API design.
 const SearchFiltersSchema = z
   .object({
     type: z
@@ -64,9 +74,9 @@ const SearchFiltersSchema = z
         "OPTIONAL: Filter results updated *before* this timestamp (inclusive). Format: YYYY-MM-DDTHH:MM:SSZ (e.g., '2023-12-31T23:59:59Z'). Check API docs for which collections support this filter."
       ),
   })
-  .strict()
+  .strict() // This strict() call ensures 'congress' filters are rejected with clear error messages
   .describe(
-    "OPTIONAL: An object containing specific filters to apply to the search. Availability of filters depends on the selected 'collection'. Check Congress.gov API documentation for supported filters per collection."
+    "OPTIONAL: An object containing specific filters to apply to the search. Availability of filters depends on the selected 'collection'. **IMPORTANT:** 'congress' filtering is NOT supported here - see tool description for details. Check Congress.gov API documentation for supported filters per collection."
   );
 
 // Define the main search parameters schema

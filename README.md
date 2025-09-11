@@ -143,7 +143,26 @@ Many common tasks require a **mandatory two-step process** using both tools:
 
     * **Output:** Look for the `memberId` (e.g., `K000393`) or other necessary identifiers in the results.
     * **!!! WARNING !!!** Searching might return multiple results. You **MUST** identify the correct entity and use its specific ID for the next step.
-    * **!!! API LIMITATION !!!** Filtering general searches by `congress` using the `filters` parameter is **NOT SUPPORTED** by the underlying API (e.g., for `/v3/bill` or `/v3/member`) and will be ignored. Congress-specific filtering usually requires using specific API paths (e.g., `/v3/bill/117`), which this tool does not construct.
+
+## 🚨 CRITICAL API LIMITATION: Congress Filtering
+
+**❌ CONGRESS FILTERING IS NOT SUPPORTED IN GENERAL SEARCHES ❌**
+
+The Congress.gov API has a fundamental architectural limitation:
+- **Does NOT work:** `/v3/bill?congress=117` (query parameter)
+- **Works instead:** `/v3/bill/117` (dedicated endpoint path)
+
+**What this means for you:**
+- ✅ **Allowed:** `congress_search` with filters like `type`, `fromDateTime`, `toDateTime`  
+- ❌ **NOT ALLOWED:** Adding `congress: "117"` to the `filters` parameter
+- ❌ **WILL BE REJECTED:** Any attempt to use `congress` as a filter will result in a validation error
+
+**Workarounds:**
+1. **Search without congress filters** and manually filter the results by the `congress` field in the response data
+2. **Use congress-specific endpoints** (would require different tooling not provided by this MCP server)
+3. **Search broadly** then narrow down results programmatically
+
+This limitation is **intentionally enforced** by the MCP server's validation to prevent confusion and provide clear error messages.
 
 2. **STEP 2: Get Related Data using `congress_getSubResource`**
     * **Purpose:** Use the identifier(s) found in Step 1 to construct the `parentUri` and fetch related details (actions, sponsors, text, etc.).
