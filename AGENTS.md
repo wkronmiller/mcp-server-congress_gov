@@ -1,5 +1,14 @@
 # Agent Guidelines for mcp-congress_gov-server
 
+## Project Management
+
+**Linear Project:** Congress API MCP Server
+
+- **Project ID:** `8a6e6579-ae68-41e7-b3e5-4ce9cd393422`
+- **Project URL:** https://linear.app/rory-kronmiller/project/congress-api-mcp-server-252cd7eba8ae
+
+**IMPORTANT:** All tasks, issues, and feature requests for this project MUST be created under the "Congress API MCP Server" Linear project. Use the project name "Congress API MCP Server" when creating issues.
+
 ## Build/Test/Lint Commands
 
 - **Build**: `npm run build` - Compiles TypeScript to dist/
