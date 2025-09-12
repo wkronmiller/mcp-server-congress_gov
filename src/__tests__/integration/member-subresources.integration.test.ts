@@ -200,22 +200,6 @@ describe("Member Sub-Resources Integration Tests", () => {
   });
 
   describe("Error Handling", () => {
-    it("should handle non-existent member sponsored legislation", async () => {
-      // Since this endpoint is not yet implemented and returns placeholder data,
-      // we test that it returns expected structure for a syntactically valid bioguide ID
-      const result = await handleMemberSponsoredLegislationResource(
-        "congress-gov://member/X999999/sponsored-legislation",
-        congressApiService
-      );
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("contents");
-      expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
-      const data = JSON.parse(result.contents[0].text);
-      expect(data).toHaveProperty("bioguideId", "X999999");
-      expect(data).toHaveProperty("sponsoredLegislation", []);
-    });
-
     it("should handle non-existent members by state", async () => {
       // This should not throw as even if no members are found, the API should return an empty array
       const result = await handleMembersByStateResource(

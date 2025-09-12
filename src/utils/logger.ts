@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Simple structured logger utility that writes JSON to stderr.
  */
 
@@ -8,6 +8,35 @@ enum LogLevel {
   INFO = "INFO",
   WARN = "WARN",
   ERROR = "ERROR",
+}
+
+// Define log level hierarchy for filtering
+const LOG_LEVEL_HIERARCHY: Record<LogLevel, number> = {
+  [LogLevel.DEBUG]: 0,
+  [LogLevel.INFO]: 1,
+  [LogLevel.WARN]: 2,
+  [LogLevel.ERROR]: 3,
+};
+
+// Get the configured log level from environment variable
+function getConfiguredLogLevel(): LogLevel {
+  const envLogLevel = process.env.LOG_LEVEL?.toUpperCase();
+  if (
+    envLogLevel &&
+    Object.values(LogLevel).includes(envLogLevel as LogLevel)
+  ) {
+    return envLogLevel as LogLevel;
+  }
+  return LogLevel.INFO; // Default to INFO level
+}
+
+const CONFIGURED_LOG_LEVEL = getConfiguredLogLevel();
+
+// Check if a log level should be output based on configuration
+function shouldLog(level: LogLevel): boolean {
+  return (
+    LOG_LEVEL_HIERARCHY[level] >= LOG_LEVEL_HIERARCHY[CONFIGURED_LOG_LEVEL]
+  );
 }
 
 // Interface for the structured log entry
@@ -70,22 +99,29 @@ function writeLog(
 // Logger object with methods for different levels
 export const logger = {
   debug: (message: string, context?: Record<string, any>): void => {
-    // TODO: Add check for LOG_LEVEL env var if needed
-    writeLog(LogLevel.DEBUG, message, context);
+    if (shouldLog(LogLevel.DEBUG)) {
+      writeLog(LogLevel.DEBUG, message, context);
+    }
   },
   info: (message: string, context?: Record<string, any>): void => {
-    writeLog(LogLevel.INFO, message, context);
+    if (shouldLog(LogLevel.INFO)) {
+      writeLog(LogLevel.INFO, message, context);
+    }
   },
   warn: (message: string, context?: Record<string, any>): void => {
-    writeLog(LogLevel.WARN, message, context);
+    if (shouldLog(LogLevel.WARN)) {
+      writeLog(LogLevel.WARN, message, context);
+    }
   },
   error: (
     message: string,
     error?: unknown,
     context?: Record<string, any>
   ): void => {
-    // Pass error object to writeLog for structured error logging
-    writeLog(LogLevel.ERROR, message, context, error);
+    if (shouldLog(LogLevel.ERROR)) {
+      // Pass error object to writeLog for structured error logging
+      writeLog(LogLevel.ERROR, message, context, error);
+    }
   },
 };
 

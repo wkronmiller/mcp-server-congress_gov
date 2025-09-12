@@ -1,13 +1,8 @@
 // Import config types for services as they are added
-import {
-  ExampleServiceConfig,
-  RateLimitConfig,
-  CongressGovConfig,
-} from "../types/index.js";
+import { RateLimitConfig, CongressGovConfig } from "../types/index.js";
 
 // Define the structure for all configurations managed
 interface ManagedConfigs {
-  exampleService: Required<ExampleServiceConfig>;
   rateLimit: Required<RateLimitConfig>;
   congressGov: Required<CongressGovConfig>;
   // Add other service config types here:
@@ -27,11 +22,6 @@ export class ConfigurationManager {
   private constructor() {
     // Initialize with default configurations
     this.config = {
-      exampleService: {
-        // Define defaults for ExampleService
-        greeting: "Hello",
-        enableDetailedLogs: false,
-      },
       rateLimit: {
         // Defaults based on Feature Spec
         maxRequests: 5000,
@@ -85,11 +75,6 @@ export class ConfigurationManager {
 
   // --- Getters for specific configurations ---
 
-  public getExampleServiceConfig(): Required<ExampleServiceConfig> {
-    // Return a copy to prevent accidental modification of the internal state
-    return { ...this.config.exampleService };
-  }
-
   public getRateLimitConfig(): Required<RateLimitConfig> {
     return { ...this.config.rateLimit };
   }
@@ -109,16 +94,6 @@ export class ConfigurationManager {
 
   // --- Updaters for specific configurations (if runtime updates are needed) ---
 
-  public updateExampleServiceConfig(
-    update: Partial<ExampleServiceConfig>
-  ): void {
-    this.config.exampleService = {
-      ...this.config.exampleService,
-      ...update,
-    };
-    // Optional: Notify relevant services about the config change
-  }
-
   // Add updaters for other service configs:
   // public updateYourServiceConfig(update: Partial<YourServiceConfig>): void {
   //   this.config.yourService = {
@@ -128,19 +103,10 @@ export class ConfigurationManager {
   // }
 
   /**
-   * Example method to load configuration overrides from environment variables.
+   * Load configuration overrides from environment variables.
    * Call this in the constructor.
    */
   private loadEnvironmentOverrides(): void {
-    // Example for ExampleService
-    if (process.env.EXAMPLE_GREETING) {
-      this.config.exampleService.greeting = process.env.EXAMPLE_GREETING;
-    }
-    if (process.env.EXAMPLE_ENABLE_LOGS) {
-      this.config.exampleService.enableDetailedLogs =
-        process.env.EXAMPLE_ENABLE_LOGS.toLowerCase() === "true";
-    }
-
     // --- Rate Limit Overrides ---
     if (process.env.RATE_LIMIT_MAX_REQUESTS) {
       const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10);

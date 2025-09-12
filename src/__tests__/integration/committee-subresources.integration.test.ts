@@ -20,7 +20,7 @@ describe("Committee Sub-Resources Integration Tests", () => {
       houseChamber: "house",
       houseCommitteeCode: "hsju00", // House Judiciary Committee
       senateChamber: "senate",
-      senateCommitteeCode: "ssga00", // Senate Committee on Governmental Affairs
+      senateCommitteeCode: "ssas00",
       congress: "118",
     },
     invalid: {
@@ -227,23 +227,14 @@ describe("Committee Sub-Resources Integration Tests", () => {
       expect(data).toHaveProperty("houseCommunications");
     }, 15000);
 
-    it("should handle committee house communications resource URI for Senate committee", async () => {
+    it("should throw error when requesting house communications resource URI for Senate committee", async () => {
       const uri = `congress-gov://committee/${testCommitteeData.valid.senateChamber}/${testCommitteeData.valid.senateCommitteeCode}/house-communication`;
 
-      const result = await handleCommitteeHouseCommunicationsResource(
+      await expect(handleCommitteeHouseCommunicationsResource(
         uri,
         congressApiService
-      );
+      )).rejects.toThrow();
 
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("contents");
-      expect(Array.isArray(result.contents)).toBe(true);
-      expect(result.contents[0]).toHaveProperty("uri", uri);
-      expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
-      expect(result.contents[0]).toHaveProperty("text");
-
-      const data = JSON.parse(result.contents[0].text);
-      expect(data).toHaveProperty("houseCommunications");
     }, 15000);
 
     it("should throw error for invalid committee house communications URI", async () => {
@@ -278,23 +269,13 @@ describe("Committee Sub-Resources Integration Tests", () => {
       expect(data).toHaveProperty("senateCommunications");
     }, 15000);
 
-    it("should handle committee senate communications resource URI for House committee", async () => {
+    it("should reject senate communications resource URI for House committee", async () => {
       const uri = `congress-gov://committee/${testCommitteeData.valid.houseChamber}/${testCommitteeData.valid.houseCommitteeCode}/senate-communication`;
 
-      const result = await handleCommitteeSenateCommunicationsResource(
+      await expect(handleCommitteeSenateCommunicationsResource(
         uri,
         congressApiService
-      );
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("contents");
-      expect(Array.isArray(result.contents)).toBe(true);
-      expect(result.contents[0]).toHaveProperty("uri", uri);
-      expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
-      expect(result.contents[0]).toHaveProperty("text");
-
-      const data = JSON.parse(result.contents[0].text);
-      expect(data).toHaveProperty("senateCommunications");
+      )).rejects.toThrow();
     }, 15000);
 
     it("should throw error for invalid committee senate communications URI", async () => {

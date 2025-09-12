@@ -123,7 +123,15 @@ export async function handleBillResource(
       `Invalid numeric identifier in bill URI: ${uri}`
     );
   }
-  // TODO: Add validation for billType if needed
+  // Validate bill type - Congress.gov API supports these types
+  const validBillTypes = ["hr", "s", "sjres", "hjres", "hconres", "sconres"];
+  const normalizedBillType = billType.toLowerCase();
+  if (!validBillTypes.includes(normalizedBillType)) {
+    throw new InvalidParameterError(
+      `Invalid bill type '${billType}'. Must be one of: ${validBillTypes.join(", ")}`
+    );
+  }
+
   const params: BillResourceParams = {
     congress: congressStr,
     billType: billType.toLowerCase(),
@@ -1192,13 +1200,9 @@ export async function handleMemberSponsoredLegislationResource(
   }
 
   try {
-    // TODO: Implement sponsored legislation API call
-    // For now, return placeholder data
-    const data = {
-      bioguideId,
-      sponsoredLegislation: [],
-      message: "Member sponsored legislation endpoint not yet implemented",
-    };
+    const data = await congressApiService.getMemberSponsoredLegislation({
+      bioguideId: bioguideId,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1225,13 +1229,9 @@ export async function handleMemberCosponsoredLegislationResource(
   }
 
   try {
-    // TODO: Implement cosponsored legislation API call
-    // For now, return placeholder data
-    const data = {
-      bioguideId,
-      cosponsoredLegislation: [],
-      message: "Member cosponsored legislation endpoint not yet implemented",
-    };
+    const data = await congressApiService.getMemberCosponsoredLegislation({
+      bioguideId: bioguideId,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1324,13 +1324,9 @@ export async function handleMembersByStateResource(
   }
 
   try {
-    // TODO: Implement members by state API call
-    // For now, return placeholder data
-    const data = {
-      stateCode,
-      members: [],
-      message: "Members by state endpoint not yet implemented",
-    };
+    const data = await congressApiService.getMembersByState({
+      stateCode: stateCode,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1368,14 +1364,10 @@ export async function handleMembersByDistrictResource(
   }
 
   try {
-    // TODO: Implement members by district API call
-    // For now, return placeholder data
-    const data = {
-      stateCode,
-      district,
-      members: [],
-      message: "Members by district endpoint not yet implemented",
-    };
+    const data = await congressApiService.getMembersByDistrict({
+      stateCode: stateCode,
+      district: district.toString(),
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1417,16 +1409,11 @@ export async function handleMembersByCongressStateDistrictResource(
   }
 
   try {
-    // TODO: Implement members by congress/state/district API call
-    // For now, return placeholder data
-    const data = {
-      congress: congress,
-      stateCode,
-      district,
-      members: [],
-      message:
-        "Members by congress/state/district endpoint not yet implemented",
-    };
+    const data = await congressApiService.getMembersByCongressStateDistrict({
+      congress: congress.toString(),
+      stateCode: stateCode,
+      district: district.toString(),
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1495,16 +1482,10 @@ export async function handleCommitteeBillsResource(
   }
 
   try {
-    // TODO: Implement committee bills API call
-    // For now, return placeholder data
-    const data = {
-      "committee-bills": {
-        chamber,
-        committeeCode,
-        bills: [],
-        message: "Committee bills endpoint not yet implemented",
-      },
-    };
+    const data = await congressApiService.getCommitteeBills({
+      chamber: chamber,
+      committeeCode: committeeCode,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1531,14 +1512,10 @@ export async function handleCommitteeReportsResource(
   }
 
   try {
-    // TODO: Implement committee reports API call
-    // For now, return placeholder data
-    const data = {
-      chamber,
-      committeeCode,
-      reports: [],
-      message: "Committee reports endpoint not yet implemented",
-    };
+    const data = await congressApiService.getCommitteeReports({
+      chamber: chamber,
+      committeeCode: committeeCode,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1565,14 +1542,10 @@ export async function handleCommitteeNominationsResource(
   }
 
   try {
-    // TODO: Implement committee nominations API call
-    // For now, return placeholder data
-    const data = {
-      chamber,
-      committeeCode,
-      nominations: [],
-      message: "Committee nominations endpoint not yet implemented",
-    };
+    const data = await congressApiService.getCommitteeNominations({
+      chamber: chamber,
+      committeeCode: committeeCode,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1599,14 +1572,10 @@ export async function handleCommitteeHouseCommunicationsResource(
   }
 
   try {
-    // TODO: Implement committee house communications API call
-    // For now, return placeholder data
-    const data = {
-      chamber,
-      committeeCode,
-      houseCommunications: [],
-      message: "Committee house communications endpoint not yet implemented",
-    };
+    const data = await congressApiService.getCommitteeHouseCommunications({
+      chamber: chamber,
+      committeeCode: committeeCode,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1633,14 +1602,10 @@ export async function handleCommitteeSenateCommunicationsResource(
   }
 
   try {
-    // TODO: Implement committee senate communications API call
-    // For now, return placeholder data
-    const data = {
-      chamber,
-      committeeCode,
-      senateCommunications: [],
-      message: "Committee senate communications endpoint not yet implemented",
-    };
+    const data = await congressApiService.getCommitteeSenateCommunications({
+      chamber: chamber,
+      committeeCode: committeeCode,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1673,15 +1638,11 @@ export async function handleCommitteeReportResource(
   const reportNumber = match[3];
 
   try {
-    // TODO: Implement committee report API call
-    // For now, return placeholder data
-    const data = {
-      congress,
-      reportType,
-      reportNumber,
-      report: {},
-      message: "Committee report endpoint not yet implemented",
-    };
+    const data = await congressApiService.getCommitteeReportDetails({
+      congress: congress,
+      reportType: reportType,
+      reportNumber: reportNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1712,15 +1673,11 @@ export async function handleCommitteePrintResource(
   const jacketNumber = match[3];
 
   try {
-    // TODO: Implement committee print API call
-    // For now, return placeholder data
-    const data = {
-      congress,
-      chamber,
-      jacketNumber,
-      print: {},
-      message: "Committee print endpoint not yet implemented",
-    };
+    const data = await congressApiService.getCommitteePrintDetails({
+      congress: congress,
+      chamber: chamber,
+      jacketNumber: jacketNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1751,15 +1708,11 @@ export async function handleCommitteeMeetingResource(
   const eventId = match[3];
 
   try {
-    // TODO: Implement committee meeting API call
-    // For now, return placeholder data
-    const data = {
-      congress,
-      chamber,
-      eventId,
-      meeting: {},
-      message: "Committee meeting endpoint not yet implemented",
-    };
+    const data = await congressApiService.getCommitteeMeetingDetails({
+      congress: congress,
+      chamber: chamber,
+      eventId: eventId,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1788,15 +1741,11 @@ export async function handleCommitteeHearingResource(
   const jacketNumber = match[3];
 
   try {
-    // TODO: Implement committee hearing API call
-    // For now, return placeholder data
-    const data = {
-      congress,
-      chamber,
-      jacketNumber,
-      hearing: {},
-      message: "Committee hearing endpoint not yet implemented",
-    };
+    const data = await congressApiService.getCommitteeHearingDetails({
+      congress: congress,
+      chamber: chamber,
+      jacketNumber: jacketNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1842,14 +1791,10 @@ export async function handleNominationResource(
   }
 
   try {
-    // TODO: Implement nomination API call
-    // For now, return placeholder data
-    const data = {
-      congress: congress,
-      nominationNumber: nominationNumber,
-      nomination: {},
-      message: "Nomination endpoint not yet implemented",
-    };
+    const data = await congressApiService.getNominationDetails({
+      congress: congress.toString(),
+      nominationNumber: nominationNumber.toString(),
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1904,15 +1849,11 @@ export async function handleNominationNomineesResource(
   }
 
   try {
-    // TODO: Implement nomination nominees API call
-    // For now, return placeholder data
-    const data = {
-      congress: congress,
-      nominationNumber: nominationNumber,
-      ordinal: ordinal,
-      nominee: {},
-      message: "Nomination nominees endpoint not yet implemented",
-    };
+    const data = await congressApiService.getNominationNominee({
+      congress: congress.toString(),
+      nominationNumber: nominationNumber.toString(),
+      ordinal: ordinal.toString(),
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1942,14 +1883,10 @@ export async function handleNominationActionsResource(
   const nominationNumber = match[2];
 
   try {
-    // TODO: Implement nomination actions API call
-    // For now, return placeholder data
-    const data = {
-      congress,
-      nominationNumber,
-      actions: [],
-      message: "Nomination actions endpoint not yet implemented",
-    };
+    const data = await congressApiService.getNominationActions({
+      congress: congress,
+      nominationNumber: nominationNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -1979,14 +1916,10 @@ export async function handleNominationCommitteesResource(
   const nominationNumber = match[2];
 
   try {
-    // TODO: Implement nomination committees API call
-    // For now, return placeholder data
-    const data = {
-      congress,
-      nominationNumber,
-      committees: [],
-      message: "Nomination committees endpoint not yet implemented",
-    };
+    const data = await congressApiService.getNominationCommittees({
+      congress: congress,
+      nominationNumber: nominationNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -2016,14 +1949,10 @@ export async function handleNominationHearingsResource(
   const nominationNumber = match[2];
 
   try {
-    // TODO: Implement nomination hearings API call
-    // For now, return placeholder data
-    const data = {
-      congress,
-      nominationNumber,
-      hearings: [],
-      message: "Nomination hearings endpoint not yet implemented",
-    };
+    const data = await congressApiService.getNominationHearings({
+      congress: congress,
+      nominationNumber: nominationNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -2050,18 +1979,7 @@ export async function handleCongressionalRecordResource(
   }
 
   try {
-    // TODO: Implement congressional record API call
-    // For now, return placeholder data in the expected API format
-    const data = {
-      Results: {
-        Issues: [],
-        Request: {
-          limit: 250,
-          offset: 0,
-        },
-        Count: 0,
-      },
-    };
+    const data = await congressApiService.getCongressionalRecord();
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -2091,17 +2009,10 @@ export async function handleDailyCongressionalRecordResource(
   const issueNumber = match[2];
 
   try {
-    // TODO: Implement daily congressional record API call
-    // For now, return placeholder data in expected format
-    const data = {
-      issue: {
-        volume: parseInt(volumeNumber, 10),
-        number: parseInt(issueNumber, 10),
-        congress: 118, // placeholder
-        date: new Date().toISOString().split("T")[0], // placeholder
-        url: `https://www.congress.gov/congressional-record/volume-${volumeNumber}/issue-${issueNumber}`,
-      },
-    };
+    const data = await congressApiService.getDailyCongressionalRecord({
+      volumeNumber: volumeNumber,
+      issueNumber: issueNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -2133,15 +2044,10 @@ export async function handleDailyCongressionalRecordArticlesResource(
   const issueNumber = match[2];
 
   try {
-    // TODO: Implement daily congressional record articles API call
-    // For now, return placeholder data
-    const data = {
-      volumeNumber,
-      issueNumber,
-      articles: [],
-      message:
-        "Daily congressional record articles endpoint not yet implemented",
-    };
+    const data = await congressApiService.getDailyCongressionalRecordArticles({
+      volumeNumber: volumeNumber,
+      issueNumber: issueNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -2201,19 +2107,11 @@ export async function handleBoundCongressionalRecordResource(
   }
 
   try {
-    // TODO: Implement bound congressional record API call
-    // For now, return placeholder data in expected format
-    const data = {
-      boundCongressionalRecord: [], // Empty array for no data case
-      pagination: {
-        count: 0,
-        next: null,
-      },
-      request: {
-        date: `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`,
-        limit: 250,
-      },
-    };
+    const data = await congressApiService.getBoundCongressionalRecord({
+      year: year.toString(),
+      month: month.toString().padStart(2, "0"),
+      day: day.toString().padStart(2, "0"),
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -2246,15 +2144,11 @@ export async function handleHouseCommunicationResource(
   const communicationNumber = match[3];
 
   try {
-    // TODO: Implement house communication API call
-    // For now, return placeholder data
-    const data = {
-      congress,
-      communicationType,
-      communicationNumber,
-      communication: {},
-      message: "House communication endpoint not yet implemented",
-    };
+    const data = await congressApiService.getHouseCommunicationDetails({
+      congress: congress,
+      communicationType: communicationType,
+      communicationNumber: communicationNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -2285,15 +2179,11 @@ export async function handleSenateCommunicationResource(
   const communicationNumber = match[3];
 
   try {
-    // TODO: Implement senate communication API call
-    // For now, return placeholder data
-    const data = {
-      congress,
-      communicationType,
-      communicationNumber,
-      communication: {},
-      message: "Senate communication endpoint not yet implemented",
-    };
+    const data = await congressApiService.getSenateCommunicationDetails({
+      congress: congress,
+      communicationType: communicationType,
+      communicationNumber: communicationNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -2320,13 +2210,9 @@ export async function handleHouseRequirementResource(
   const requirementNumber = match[1];
 
   try {
-    // TODO: Implement house requirement API call
-    // For now, return placeholder data
-    const data = {
-      requirementNumber,
-      requirement: {},
-      message: "House requirement endpoint not yet implemented",
-    };
+    const data = await congressApiService.getHouseRequirementDetails({
+      requirementNumber: requirementNumber,
+    });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
@@ -2358,14 +2244,10 @@ export async function handleHouseRequirementMatchingCommunicationsResource(
   const requirementNumber = match[1];
 
   try {
-    // TODO: Implement house requirement matching communications API call
-    // For now, return placeholder data
-    const data = {
-      requirementNumber,
-      matchingCommunications: [],
-      message:
-        "House requirement matching communications endpoint not yet implemented",
-    };
+    const data =
+      await congressApiService.getHouseRequirementMatchingCommunications({
+        requirementNumber: requirementNumber,
+      });
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);

@@ -1,5 +1,4 @@
-﻿// Export all services from this barrel file
-export * from "./ExampleService.js";
+// Export all services from this barrel file
 export * from "./CongressApiService.js"; // Export the base API service
 export * from "./RateLimitService.js"; // Export the RateLimit service
 // export * from './BillService.js'; // Removed
