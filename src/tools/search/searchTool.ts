@@ -3,6 +3,8 @@ import {
   McpError,
   ErrorCode,
   CallToolResult,
+  ServerRequest,
+  ServerNotification,
 } from "@modelcontextprotocol/sdk/types.js"; // Ensure ErrorCode is imported
 import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js"; // For handler signature
 import { z } from "zod";
@@ -38,7 +40,7 @@ export const searchTool = (
   // Type assertion for args based on Zod schema
   const processSearchRequest = async (
     args: CongressSearchParams,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<CallToolResult> => {
     logger.debug(`Processing ${TOOL_NAME} request`, {
       args,

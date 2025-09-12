@@ -2,8 +2,8 @@ import "dotenv/config";
 import express from "express";
 import { randomUUID } from "node:crypto";
 import { createServer } from "./createServer.js";
-import { StreamableHTTPServerTransport } from "../typescript-sdk/dist/esm/server/streamableHttp.js";
-import { isInitializeRequest } from "../typescript-sdk/dist/esm/types.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js"
 
 async function main() {
   const port = parseInt(process.env.PORT || "3000", 10);

@@ -12,6 +12,7 @@ import { logger } from "./utils/logger.js";
 // Import all needed param types
 import {
   BillResourceParams,
+  VALID_BILL_TYPES,
   MemberResourceParams,
   CongressResourceParams,
   CommitteeResourceParams,
@@ -123,12 +124,11 @@ export async function handleBillResource(
       `Invalid numeric identifier in bill URI: ${uri}`
     );
   }
-  // Validate bill type - Congress.gov API supports these types
-  const validBillTypes = ["hr", "s", "sjres", "hjres", "hconres", "sconres"];
+  // Validate bill type using the imported constants
   const normalizedBillType = billType.toLowerCase();
-  if (!validBillTypes.includes(normalizedBillType)) {
+  if (!VALID_BILL_TYPES.includes(normalizedBillType as any)) {
     throw new InvalidParameterError(
-      `Invalid bill type '${billType}'. Must be one of: ${validBillTypes.join(", ")}`
+      `Invalid bill type '${billType}'. Must be one of: ${VALID_BILL_TYPES.join(", ")} (hr=House Bill, s=Senate Bill, hjres=House Joint Resolution, sjres=Senate Joint Resolution, hconres=House Concurrent Resolution, sconres=Senate Concurrent Resolution, hres=House Simple Resolution, sres=Senate Simple Resolution)`
     );
   }
 

@@ -3,6 +3,8 @@ import {
   McpError,
   ErrorCode,
   CallToolResult,
+  ServerRequest,
+  ServerNotification,
 } from "@modelcontextprotocol/sdk/types.js";
 import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
 import { z } from "zod";
@@ -44,7 +46,7 @@ export const getSubResourceTool = (
 
   const processGetSubResourceRequest = async (
     args: CongressGetSubResourceParams,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<CallToolResult> => {
     logger.debug(`Processing ${TOOL_NAME} request`, {
       args,

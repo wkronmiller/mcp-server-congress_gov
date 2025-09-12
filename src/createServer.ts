@@ -10,7 +10,8 @@ import {
   ReadResourceResult, // Needed for callback signatures
   Request,
   Notification,
-  // RequestHandlerExtra, // Needed for callback signatures - Import from specific path
+  ServerRequest, // Import for type parameters
+  ServerNotification, // Import for type parameters
   // Variables // Needed for template callback signatures - Import from specific path
 } from "@modelcontextprotocol/sdk/types.js";
 // Import potentially internal types from specific paths based on mcp.d.ts
@@ -124,7 +125,7 @@ export function createServer(): McpServer {
   const readBillCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillCallback", {
       uri: uri.toString(),
@@ -138,7 +139,7 @@ export function createServer(): McpServer {
   const readBillActionsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillActionsCallback", {
       uri: uri.toString(),
@@ -150,7 +151,7 @@ export function createServer(): McpServer {
   const readBillAmendmentsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillAmendmentsCallback", {
       uri: uri.toString(),
@@ -162,7 +163,7 @@ export function createServer(): McpServer {
   const readBillCommitteesCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillCommitteesCallback", {
       uri: uri.toString(),
@@ -174,7 +175,7 @@ export function createServer(): McpServer {
   const readBillCosponsorsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillCosponsorsCallback", {
       uri: uri.toString(),
@@ -186,7 +187,7 @@ export function createServer(): McpServer {
   const readBillRelatedBillsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillRelatedBillsCallback", {
       uri: uri.toString(),
@@ -198,7 +199,7 @@ export function createServer(): McpServer {
   const readBillSubjectsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillSubjectsCallback", {
       uri: uri.toString(),
@@ -210,7 +211,7 @@ export function createServer(): McpServer {
   const readBillSummariesCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillSummariesCallback", {
       uri: uri.toString(),
@@ -222,7 +223,7 @@ export function createServer(): McpServer {
   const readBillTextCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillTextCallback", {
       uri: uri.toString(),
@@ -234,7 +235,7 @@ export function createServer(): McpServer {
   const readBillTitlesCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readBillTitlesCallback", {
       uri: uri.toString(),
@@ -246,7 +247,7 @@ export function createServer(): McpServer {
   const readMemberCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readMemberCallback", {
       uri: uri.toString(),
@@ -259,7 +260,7 @@ export function createServer(): McpServer {
   const readMemberSponsoredLegislationCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readMemberSponsoredLegislationCallback", {
       uri: uri.toString(),
@@ -274,7 +275,7 @@ export function createServer(): McpServer {
   const readMemberCosponsoredLegislationCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readMemberCosponsoredLegislationCallback", {
       uri: uri.toString(),
@@ -289,7 +290,7 @@ export function createServer(): McpServer {
   const readMembersByStateCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readMembersByStateCallback", {
       uri: uri.toString(),
@@ -301,7 +302,7 @@ export function createServer(): McpServer {
   const readMembersByDistrictCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readMembersByDistrictCallback", {
       uri: uri.toString(),
@@ -313,7 +314,7 @@ export function createServer(): McpServer {
   const readMembersByCongressStateDistrictCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readMembersByCongressStateDistrictCallback", {
       uri: uri.toString(),
@@ -328,7 +329,7 @@ export function createServer(): McpServer {
   const readCongressCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCongressCallback", {
       uri: uri.toString(),
@@ -340,7 +341,7 @@ export function createServer(): McpServer {
   const readCommitteeCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteeCallback", {
       uri: uri.toString(),
@@ -354,7 +355,7 @@ export function createServer(): McpServer {
   const readCommitteeBillsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteeBillsCallback", {
       uri: uri.toString(),
@@ -366,7 +367,7 @@ export function createServer(): McpServer {
   const readCommitteeReportsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteeReportsCallback", {
       uri: uri.toString(),
@@ -378,7 +379,7 @@ export function createServer(): McpServer {
   const readCommitteeNominationsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteeNominationsCallback", {
       uri: uri.toString(),
@@ -393,7 +394,7 @@ export function createServer(): McpServer {
   const readCommitteeHouseCommunicationsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteeHouseCommunicationsCallback", {
       uri: uri.toString(),
@@ -408,7 +409,7 @@ export function createServer(): McpServer {
   const readCommitteeSenateCommunicationsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteeSenateCommunicationsCallback", {
       uri: uri.toString(),
@@ -424,7 +425,7 @@ export function createServer(): McpServer {
   const readAmendmentCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readAmendmentCallback", {
       uri: uri.toString(),
@@ -436,7 +437,7 @@ export function createServer(): McpServer {
   const readAmendmentActionsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readAmendmentActionsCallback", {
       uri: uri.toString(),
@@ -448,7 +449,7 @@ export function createServer(): McpServer {
   const readAmendmentCosponsorsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readAmendmentCosponsorsCallback", {
       uri: uri.toString(),
@@ -463,7 +464,7 @@ export function createServer(): McpServer {
   const readAmendmentAmendmentsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readAmendmentAmendmentsCallback", {
       uri: uri.toString(),
@@ -478,7 +479,7 @@ export function createServer(): McpServer {
   const readAmendmentTextCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readAmendmentTextCallback", {
       uri: uri.toString(),
@@ -489,7 +490,7 @@ export function createServer(): McpServer {
 
   const readInfoOverviewCallback = async (
     uri: URL,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readInfoOverviewCallback", {
       uri: uri.toString(),
@@ -501,7 +502,7 @@ export function createServer(): McpServer {
   const readLawCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readLawCallback", {
       uri: uri.toString(),
@@ -512,7 +513,7 @@ export function createServer(): McpServer {
 
   const readInfoCurrentCongressCallback = async (
     uri: URL,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readInfoCurrentCongressCallback", {
       uri: uri.toString(),
@@ -524,7 +525,7 @@ export function createServer(): McpServer {
   const readCommitteeReportCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteeReportCallback", {
       uri: uri.toString(),
@@ -536,7 +537,7 @@ export function createServer(): McpServer {
   const readCommitteePrintCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteePrintCallback", {
       uri: uri.toString(),
@@ -548,7 +549,7 @@ export function createServer(): McpServer {
   const readCommitteeMeetingCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteeMeetingCallback", {
       uri: uri.toString(),
@@ -560,7 +561,7 @@ export function createServer(): McpServer {
   const readCommitteeHearingCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCommitteeHearingCallback", {
       uri: uri.toString(),
@@ -573,7 +574,7 @@ export function createServer(): McpServer {
   const readNominationCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readNominationCallback", {
       uri: uri.toString(),
@@ -585,7 +586,7 @@ export function createServer(): McpServer {
   const readNominationNomineesCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readNominationNomineesCallback", {
       uri: uri.toString(),
@@ -597,7 +598,7 @@ export function createServer(): McpServer {
   const readNominationActionsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readNominationActionsCallback", {
       uri: uri.toString(),
@@ -609,7 +610,7 @@ export function createServer(): McpServer {
   const readNominationCommitteesCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readNominationCommitteesCallback", {
       uri: uri.toString(),
@@ -624,7 +625,7 @@ export function createServer(): McpServer {
   const readNominationHearingsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readNominationHearingsCallback", {
       uri: uri.toString(),
@@ -636,7 +637,7 @@ export function createServer(): McpServer {
   // Congressional Record callbacks
   const readCongressionalRecordCallback = async (
     uri: URL,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readCongressionalRecordCallback", {
       uri: uri.toString(),
@@ -650,7 +651,7 @@ export function createServer(): McpServer {
   const readDailyCongressionalRecordCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readDailyCongressionalRecordCallback", {
       uri: uri.toString(),
@@ -665,7 +666,7 @@ export function createServer(): McpServer {
   const readDailyCongressionalRecordArticlesCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     logger.debug("Handling readDailyCongressionalRecordArticlesCallback", {
       uri: uri.toString(),
@@ -680,7 +681,7 @@ export function createServer(): McpServer {
   const readBoundCongressionalRecordCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleBoundCongressionalRecordResource(
       uri.toString(),
@@ -692,7 +693,7 @@ export function createServer(): McpServer {
   const readHouseCommunicationCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleHouseCommunicationResource(uri.toString(), congressApiService);
   };
@@ -700,7 +701,7 @@ export function createServer(): McpServer {
   const readSenateCommunicationCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleSenateCommunicationResource(
       uri.toString(),
@@ -711,7 +712,7 @@ export function createServer(): McpServer {
   const readHouseRequirementCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleHouseRequirementResource(uri.toString(), congressApiService);
   };
@@ -719,7 +720,7 @@ export function createServer(): McpServer {
   const readHouseRequirementMatchingCommunicationsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleHouseRequirementMatchingCommunicationsResource(
       uri.toString(),
@@ -731,7 +732,7 @@ export function createServer(): McpServer {
   const readTreatyCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleTreatyResource(uri.toString(), congressApiService);
   };
@@ -739,7 +740,7 @@ export function createServer(): McpServer {
   const readTreatyActionsCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleTreatyActionsResource(uri.toString(), congressApiService);
   };
@@ -747,7 +748,7 @@ export function createServer(): McpServer {
   const readTreatyCommitteesCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleTreatyCommitteesResource(uri.toString(), congressApiService);
   };
@@ -756,7 +757,7 @@ export function createServer(): McpServer {
   const readCRSReportCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleCRSReportResource(uri.toString(), congressApiService);
   };
@@ -765,7 +766,7 @@ export function createServer(): McpServer {
   const readSummariesCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleSummariesResource(uri.toString(), congressApiService);
   };
@@ -774,7 +775,7 @@ export function createServer(): McpServer {
   const readHouseVoteCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleHouseVoteResource(uri.toString(), congressApiService);
   };
@@ -782,7 +783,7 @@ export function createServer(): McpServer {
   const readHouseVoteMembersCallback = async (
     uri: URL,
     variables: Variables,
-    extra: RequestHandlerExtra
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleHouseVoteMembersResource(uri.toString(), congressApiService);
   };

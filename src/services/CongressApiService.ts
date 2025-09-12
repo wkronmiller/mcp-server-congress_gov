@@ -240,8 +240,26 @@ export class CongressApiService {
 
   // --- Specific Item Retrieval Methods (RFC-002) ---
 
+  /**
+   * Get details for a specific bill
+   * @param params Bill parameters including congress, billType, and billNumber
+   * @returns Bill details from the API
+   * @example
+   * // Get details for H.R. 21 from the 117th Congress
+   * await getBillDetails({ congress: "117", billType: "hr", billNumber: "21" })
+   * // API endpoint: /bill/117/hr/21
+   *
+   * Valid bill types:
+   * - hr: House Bill
+   * - s: Senate Bill
+   * - hjres: House Joint Resolution
+   * - sjres: Senate Joint Resolution
+   * - hconres: House Concurrent Resolution
+   * - sconres: Senate Concurrent Resolution
+   * - hres: House Simple Resolution
+   * - sres: Senate Simple Resolution
+   */
   public async getBillDetails(params: BillResourceParams): Promise<any> {
-    // Validate numeric parts if needed, assuming they come as strings from URI parsing
     const endpoint = `/bill/${params.congress}/${params.billType}/${params.billNumber}`;
     return this.executeRequest(endpoint);
   }
@@ -828,6 +846,16 @@ export class CongressApiService {
 
   // --- Bill Sub-Resource Methods ---
 
+  /**
+   * Get actions for a specific bill
+   * @param params Bill parameters including congress, billType, and billNumber
+   * @param pagination Optional pagination parameters
+   * @returns List of actions taken on the bill
+   * @example
+   * // Get actions for H.R. 21 from the 117th Congress
+   * await getBillActions({ congress: "117", billType: "hr", billNumber: "21" })
+   * // API endpoint: /bill/117/hr/21/actions
+   */
   public async getBillActions(
     params: BillResourceParams,
     pagination?: PaginationParams

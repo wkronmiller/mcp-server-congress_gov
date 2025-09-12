@@ -2,7 +2,38 @@ import { z } from "zod";
 
 export const TOOL_NAME = "congress_getSubResource";
 
-export const TOOL_DESCRIPTION = `Fetches related data lists (sub-resources like 'actions', 'cosponsors', 'text') for a specific parent Congress.gov entity. **!!! ABSOLUTE PREREQUISITE !!!** You **MUST** provide the exact, complete MCP URI of the parent entity in 'parentUri' (e.g., 'congress-gov://member/K000393'). This URI **MUST** be obtained from a prior 'congress_search' or known identifier; guessing will **FAIL**. You **MUST** also provide a 'subResource' name that is **STRICTLY VALID** for the parent entity's type (check the list below!). **!!! PROVIDING AN INVALID 'parentUri' OR 'subResource' COMBINATION WILL GUARANTEE AN ERROR !!!**`;
+export const TOOL_DESCRIPTION = `Fetches related data lists (sub-resources like 'actions', 'cosponsors', 'text') for a specific parent Congress.gov entity. 
+
+**!!! ABSOLUTE PREREQUISITE !!!** You **MUST** provide the exact, complete MCP URI of the parent entity in 'parentUri'. This URI **MUST** be obtained from a prior 'congress_search' or known identifier; guessing will **FAIL**. 
+
+**Example URIs with Field Explanations:**
+
+**Bill URI Format:** 'congress-gov://bill/{congress}/{billType}/{billNumber}'
+- **congress**: The congressional session number (e.g., '117' for 117th Congress 2021-2022, '118' for 118th Congress 2023-2024)
+- **billType**: The type of legislation (see bill types below)  
+- **billNumber**: The sequential number assigned to the bill within its type (e.g., '21' for the 21st bill of that type)
+- Example: 'congress-gov://bill/117/hr/21' = H.R. 21 from the 117th Congress
+
+**Member URI Format:** 'congress-gov://member/{bioguideId}'
+- **bioguideId**: Unique identifier from the Biographical Directory of Congress (e.g., 'K000393', 'P000197')
+- Example: 'congress-gov://member/K000393' = Member with Bioguide ID K000393
+
+**Committee URI Format:** 'congress-gov://committee/{chamber}/{committeeCode}'
+- **chamber**: Either 'house' or 'senate'
+- **committeeCode**: Official committee code (e.g., 'hsii00' for House Natural Resources)
+- Example: 'congress-gov://committee/house/hsii00' = House Committee on Natural Resources
+
+**Bill Types Explained:**
+- **hr**: House Bill - Regular legislation originating in the House (e.g., H.R. 1, H.R. 3076)
+- **s**: Senate Bill - Regular legislation originating in the Senate (e.g., S. 25, S. 1234)
+- **hjres**: House Joint Resolution - Special resolutions from House (e.g., H.J.Res. 1)
+- **sjres**: Senate Joint Resolution - Special resolutions from Senate (e.g., S.J.Res. 5)
+- **hconres**: House Concurrent Resolution - House procedural resolutions (e.g., H.Con.Res. 10)
+- **sconres**: Senate Concurrent Resolution - Senate procedural resolutions (e.g., S.Con.Res. 3)  
+- **hres**: House Simple Resolution - House-only resolutions (e.g., H.Res. 100)
+- **sres**: Senate Simple Resolution - Senate-only resolutions (e.g., S.Res. 50)
+
+You **MUST** also provide a 'subResource' name that is **STRICTLY VALID** for the parent entity's type (check the list below!). **!!! PROVIDING AN INVALID 'parentUri' OR 'subResource' COMBINATION WILL GUARANTEE AN ERROR !!!**`;
 
 // Define allowed sub-resource types based on API documentation, grouped by parent type
 const SubResourceTypeEnum = z.enum([
@@ -46,12 +77,49 @@ const SubResourceTypeEnum = z.enum([
   .describe(`REQUIRED: The type of related information (sub-resource) to retrieve for the parent entity specified in 'parentUri'.
 
 **Valid Parent URI Types & Their Sub-Resources:**
-*   **Bill ('congress-gov://bill/...'):** actions, amendments, committees, cosponsors, relatedbills, subjects, summaries, text, titles
-*   **Member ('congress-gov://member/...'):** sponsored-legislation, cosponsored-legislation
-*   **Committee ('congress-gov://committee/...'):** reports, nominations, house-communication, senate-communication, bills
-*   **Amendment ('congress-gov://amendment/...'):** actions, amendments (to this amendment), cosponsors, text
-*   **Nomination ('congress-gov://nomination/...'):** actions, committees, hearings
-*   **Treaty ('congress-gov://treaty/...'):** actions, committees
+
+**Bill** ('congress-gov://bill/{congress}/{type}/{number}')
+Example: 'congress-gov://bill/117/hr/21' (H.R. 21 from 117th Congress)
+- actions: Legislative actions taken on the bill
+- amendments: Amendments proposed to the bill
+- committees: Committees that have considered the bill
+- cosponsors: Members who have cosponsored the bill
+- relatedbills: Bills related to this one
+- subjects: Policy area subjects of the bill
+- summaries: CRS summaries of the bill
+- text: Full text versions of the bill
+- titles: Official and short titles of the bill
+
+**Member** ('congress-gov://member/{bioguideId}')
+Example: 'congress-gov://member/P000197' (Nancy Pelosi)
+- sponsored-legislation: Bills sponsored by the member
+- cosponsored-legislation: Bills cosponsored by the member
+
+**Committee** ('congress-gov://committee/{chamber}/{code}')
+Example: 'congress-gov://committee/house/hsii00' (House Natural Resources)
+- reports: Committee reports issued
+- nominations: Nominations referred to the committee
+- house-communication: House communications referred
+- senate-communication: Senate communications referred
+- bills: Bills referred to the committee
+
+**Amendment** ('congress-gov://amendment/{congress}/{type}/{number}')
+Example: 'congress-gov://amendment/117/samdt/2137' (Senate Amendment 2137)
+- actions: Actions taken on the amendment
+- amendments: Amendments to this amendment
+- cosponsors: Cosponsors of the amendment
+- text: Text of the amendment
+
+**Nomination** ('congress-gov://nomination/{congress}/{number}')
+Example: 'congress-gov://nomination/117/2381'
+- actions: Actions taken on the nomination
+- committees: Committees considering the nomination
+- hearings: Hearings held on the nomination
+
+**Treaty** ('congress-gov://treaty/{congress}/{number}')
+Example: 'congress-gov://treaty/117/3'
+- actions: Actions taken on the treaty
+- committees: Committees considering the treaty
 
 **IMPORTANT:** You MUST provide a 'subResource' value that is valid for the type of entity specified in 'parentUri'.`);
 
@@ -64,7 +132,7 @@ export const TOOL_PARAMS = {
       message: "Parent URI must start with 'congress-gov://'",
     })
     .describe(
-      "REQUIRED: The full MCP resource URI of the parent entity. Example: 'congress-gov://bill/117/hr/3076' or 'congress-gov://member/P000197'."
+      "REQUIRED: The full MCP resource URI of the parent entity. Format: 'congress-gov://bill/{congress}/{billType}/{billNumber}' where congress=session number (117, 118, etc.), billType=legislation type (hr, s, hjres, etc.), billNumber=sequential number (1, 21, 3076, etc.). Examples: 'congress-gov://bill/117/hr/3076' (House Bill 3076 from 117th Congress), 'congress-gov://bill/118/s/25' (Senate Bill 25 from 118th Congress), 'congress-gov://member/P000197' (Member with Bioguide ID P000197)."
     ),
   subResource: SubResourceTypeEnum,
   limit: z

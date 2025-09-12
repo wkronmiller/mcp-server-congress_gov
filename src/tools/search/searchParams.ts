@@ -2,7 +2,18 @@ import { z } from "zod";
 
 export const TOOL_NAME = "congress_search";
 
-export const TOOL_DESCRIPTION = `Searches or lists items within a specified Congress.gov collection (e.g., 'bill', 'member'). **!!! CRITICAL WORKFLOW STEP !!!** This tool is **REQUIRED** as the **FIRST STEP** to locate specific entities and retrieve their unique identifiers (like memberId, bill number/type/congress). These identifiers are **ESSENTIAL** inputs for other tools like 'congress_getSubResource'. **FAILURE TO USE THIS FIRST WILL LIKELY CAUSE SUBSEQUENT OPERATIONS TO FAIL.** Returns a list; be prepared to handle multiple results and extract the specific ID needed. **WARNING:** Filtering by 'congress' using the 'filters' parameter is **NOT SUPPORTED** by the underlying API for general collection searches (e.g., /v3/bill) and will be ignored; congress-specific filtering requires using specific API paths not directly targeted by this tool.`;
+export const TOOL_DESCRIPTION = `Searches or lists items within a specified Congress.gov collection (e.g., 'bill', 'member'). 
+
+**!!! CRITICAL WORKFLOW STEP !!!** This tool is **REQUIRED** as the **FIRST STEP** to locate specific entities and retrieve their unique identifiers (like memberId, bill number/type/congress). These identifiers are **ESSENTIAL** inputs for other tools like 'congress_getSubResource'. **FAILURE TO USE THIS FIRST WILL LIKELY CAUSE SUBSEQUENT OPERATIONS TO FAIL.**
+
+**Example Workflow:**
+1. Search for bills: collection='bill', filters={type: 'hr'} to find House Bills
+2. Get bill details: Use returned URI like 'congress-gov://bill/117/hr/21'
+3. Get sub-resources: Use the URI with 'congress_getSubResource' tool
+
+Returns a list; be prepared to handle multiple results and extract the specific ID needed. 
+
+**WARNING:** Filtering by 'congress' using the 'filters' parameter is **NOT SUPPORTED** by the underlying API for general collection searches (e.g., /v3/bill) and will be ignored; congress-specific filtering requires using specific API paths not directly targeted by this tool.`;
 
 // Define allowed collections based on API documentation
 const SearchableCollectionEnum = z
@@ -22,7 +33,18 @@ const SearchableCollectionEnum = z
     "member", // Added member based on API docs
   ])
   .describe(
-    "REQUIRED: The specific collection within Congress.gov to search (e.g., 'bill', 'member', 'committee'). Determines the API endpoint used (e.g., /v3/bill, /v3/member)."
+    "REQUIRED: The specific collection within Congress.gov to search. Each collection contains different types of congressional data:\n" +
+      "• 'bill' - Legislation including House Bills (H.R.), Senate Bills (S.), Joint Resolutions, Concurrent Resolutions, Simple Resolutions\n" +
+      "• 'amendment' - Amendments to bills including House Amendments (HAMDT), Senate Amendments (SAMDT)\n" +
+      "• 'member' - Current and former Members of Congress with biographical and legislative data\n" +
+      "• 'committee' - Congressional committees from both chambers with reports and activities\n" +
+      "• 'committee-report' - Official committee reports on legislation and oversight\n" +
+      "• 'committee-print' - Committee publications and background materials\n" +
+      "• 'congressional-record' - Official proceedings and debates of Congress\n" +
+      "• 'nomination' - Presidential nominations requiring Senate confirmation\n" +
+      "• 'treaty' - International treaties requiring Senate ratification\n" +
+      "• 'house-communication' & 'senate-communication' - Official chamber communications\n" +
+      "Determines the API endpoint used (e.g., /v3/bill, /v3/member, /v3/committee)."
   );
 
 // Define allowed sort orders
@@ -41,7 +63,27 @@ const SearchFiltersSchema = z
       .string()
       .optional()
       .describe(
-        "OPTIONAL: Filter by a specific type within the collection (e.g., for 'bill' collection, use 'hr', 's', 'hres'; for 'committee-report', use 'hrpt', 'srpt'). Check API docs for valid types per collection."
+        "OPTIONAL: Filter by a specific type within the collection. Type values determine the specific category of documents to return:\n\n" +
+          "**For 'bill' collection:**\n" +
+          "• 'hr' - House Bills (H.R. 1, H.R. 3076) - Regular legislation from House\n" +
+          "• 's' - Senate Bills (S. 25, S. 1234) - Regular legislation from Senate\n" +
+          "• 'hjres' - House Joint Resolutions (H.J.Res. 1) - Constitutional amendments, emergency declarations\n" +
+          "• 'sjres' - Senate Joint Resolutions (S.J.Res. 5) - Constitutional amendments, emergency declarations\n" +
+          "• 'hconres' - House Concurrent Resolutions (H.Con.Res. 10) - Budget resolutions, procedural matters\n" +
+          "• 'sconres' - Senate Concurrent Resolutions (S.Con.Res. 3) - Budget resolutions, procedural matters\n" +
+          "• 'hres' - House Simple Resolutions (H.Res. 100) - House rules, commemorative resolutions\n" +
+          "• 'sres' - Senate Simple Resolutions (S.Res. 50) - Senate rules, commemorative resolutions\n\n" +
+          "**For 'amendment' collection:**\n" +
+          "• 'hamdt' - House Amendments - Amendments proposed in the House\n" +
+          "• 'samdt' - Senate Amendments - Amendments proposed in the Senate\n" +
+          "• 'suamdt' - Senate Unprinted Amendments - Senate amendments not yet printed\n\n" +
+          "**For 'committee-report' collection:**\n" +
+          "• 'hrpt' - House Reports - Official House committee reports\n" +
+          "• 'srpt' - Senate Reports - Official Senate committee reports\n\n" +
+          "**For 'committee-print' collection:**\n" +
+          "• 'hprt' - House Prints - House committee publications\n" +
+          "• 'sprt' - Senate Prints - Senate committee publications\n\n" +
+          "Check API docs for additional type filters available for other collections."
       ),
     fromDateTime: z
       .string()
