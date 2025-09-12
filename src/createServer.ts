@@ -880,7 +880,7 @@ export function createServer(): McpServer {
   );
 
   server.resource(
-    "Bill Summaries",
+    "Bill Summary",
     new ResourceTemplate(
       "congress-gov://bill/{congress}/{billType}/{billNumber}/summaries",
       { list: undefined }
