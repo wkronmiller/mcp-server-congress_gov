@@ -1,33 +1,19 @@
-import { CongressApiService } from "../../services/CongressApiService.js";
-import {
-  handleBillActionsResource,
-  handleBillAmendmentsResource,
-  handleBillCommitteesResource,
-  handleBillCosponsorsResource,
-  handleBillRelatedBillsResource,
-  handleBillSubjectsResource,
-  handleBillSummariesResource,
-  handleBillTextResource,
-  handleBillTitlesResource,
-} from "../../resourceHandlers.js";
-import { testData } from "../utils/testServer.js";
+import { createTestServer, testData } from "../utils/testServer.js";
+import { createTestClient } from "../utils/mcpClient.js";
 
 /**
  * Integration tests for all bill sub-resource handlers
  * These tests validate the new bill sub-resource functionality
  */
 describe("Bill Sub-Resources Integration Tests", () => {
-  let congressApiService: CongressApiService;
-
-  beforeAll(() => {
-    congressApiService = new CongressApiService();
-  });
+  const server = createTestServer();
+  const client = createTestClient(server);
 
   describe("Bill Actions Resource", () => {
     it("should handle bill actions resource URI", async () => {
       const uri = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}/actions`;
 
-      const result = await handleBillActionsResource(uri, congressApiService);
+      const result = await client.readResource(uri);
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("contents");
@@ -36,16 +22,14 @@ describe("Bill Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("actions");
     }, 15000);
 
     it("should throw error for invalid bill actions URI", async () => {
       const invalidUri = "congress-gov://bill/999/hr/99999/actions";
 
-      await expect(
-        handleBillActionsResource(invalidUri, congressApiService)
-      ).rejects.toThrow();
+      await expect(client.readResource(invalidUri)).rejects.toThrow();
     }, 10000);
   });
 
@@ -53,10 +37,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
     it("should handle bill amendments resource URI", async () => {
       const uri = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}/amendments`;
 
-      const result = await handleBillAmendmentsResource(
-        uri,
-        congressApiService
-      );
+      const result = await client.readResource(uri);
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("contents");
@@ -65,7 +46,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("amendments");
     }, 15000);
   });
@@ -74,10 +55,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
     it("should handle bill committees resource URI", async () => {
       const uri = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}/committees`;
 
-      const result = await handleBillCommitteesResource(
-        uri,
-        congressApiService
-      );
+      const result = await client.readResource(uri);
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("contents");
@@ -86,7 +64,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("committees");
     }, 15000);
   });
@@ -95,10 +73,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
     it("should handle bill cosponsors resource URI", async () => {
       const uri = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}/cosponsors`;
 
-      const result = await handleBillCosponsorsResource(
-        uri,
-        congressApiService
-      );
+      const result = await client.readResource(uri);
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("contents");
@@ -107,7 +82,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("cosponsors");
     }, 15000);
   });
@@ -116,10 +91,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
     it("should handle bill related bills resource URI", async () => {
       const uri = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}/relatedbills`;
 
-      const result = await handleBillRelatedBillsResource(
-        uri,
-        congressApiService
-      );
+      const result = await client.readResource(uri);
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("contents");
@@ -128,7 +100,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("relatedBills");
     }, 15000);
   });
@@ -137,7 +109,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
     it("should handle bill subjects resource URI", async () => {
       const uri = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}/subjects`;
 
-      const result = await handleBillSubjectsResource(uri, congressApiService);
+      const result = await client.readResource(uri);
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("contents");
@@ -146,7 +118,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("subjects");
     }, 15000);
   });
@@ -155,7 +127,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
     it("should handle bill summaries resource URI", async () => {
       const uri = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}/summaries`;
 
-      const result = await handleBillSummariesResource(uri, congressApiService);
+      const result = await client.readResource(uri);
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("contents");
@@ -164,7 +136,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("summaries");
     }, 15000);
   });
@@ -173,7 +145,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
     it("should handle bill text resource URI", async () => {
       const uri = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}/text`;
 
-      const result = await handleBillTextResource(uri, congressApiService);
+      const result = await client.readResource(uri);
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("contents");
@@ -182,7 +154,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("textVersions");
     }, 15000);
   });
@@ -191,7 +163,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
     it("should handle bill titles resource URI", async () => {
       const uri = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}/titles`;
 
-      const result = await handleBillTitlesResource(uri, congressApiService);
+      const result = await client.readResource(uri);
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("contents");
@@ -200,7 +172,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("titles");
     }, 15000);
   });
@@ -219,7 +191,7 @@ describe("Bill Sub-Resources Integration Tests", () => {
 
         // This should not throw an error for valid bill types
         expect(async () => {
-          await handleBillActionsResource(uri, congressApiService);
+          await client.readResource(uri);
         }).not.toThrow();
       }
     }, 30000);
@@ -233,38 +205,30 @@ describe("Bill Sub-Resources Integration Tests", () => {
       ];
 
       for (const invalidUri of invalidUris) {
-        await expect(
-          handleBillActionsResource(invalidUri, congressApiService)
-        ).rejects.toThrow();
+        await expect(client.readResource(invalidUri)).rejects.toThrow();
       }
     });
   });
 
-  describe("Service Method Integration", () => {
-    it("should call correct service methods for each sub-resource", async () => {
-      const params = {
-        congress: testData.bills.valid.congress,
-        billType: testData.bills.valid.billType,
-        billNumber: testData.bills.valid.billNumber,
-      };
-
-      // Test all service methods work
-      const serviceTests = [
-        () => congressApiService.getBillActions(params),
-        () => congressApiService.getBillAmendments(params),
-        () => congressApiService.getBillCommittees(params),
-        () => congressApiService.getBillCosponsors(params),
-        () => congressApiService.getBillRelatedBills(params),
-        () => congressApiService.getBillSubjects(params),
-        () => congressApiService.getBillSummaries(params),
-        () => congressApiService.getBillText(params),
-        () => congressApiService.getBillTitles(params),
+  describe("Service Method Integration (via Resources)", () => {
+    it("should fetch all bill sub-resources via URIs", async () => {
+      const base = `congress-gov://bill/${testData.bills.valid.congress}/${testData.bills.valid.billType}/${testData.bills.valid.billNumber}`;
+      const uris = [
+        `${base}/actions`,
+        `${base}/amendments`,
+        `${base}/committees`,
+        `${base}/cosponsors`,
+        `${base}/relatedbills`,
+        `${base}/subjects`,
+        `${base}/summaries`,
+        `${base}/text`,
+        `${base}/titles`,
       ];
 
-      for (const test of serviceTests) {
-        const result = await test();
+      for (const uri of uris) {
+        const result = await client.readResource(uri);
         expect(result).toBeDefined();
-        expect(typeof result).toBe("object");
+        expect(result).toHaveProperty("contents");
       }
     }, 45000);
   });

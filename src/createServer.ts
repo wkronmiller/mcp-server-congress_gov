@@ -8,6 +8,8 @@ import {
   ResourceContents,
   ReadResourceRequest, // Keep for type hints if needed elsewhere, maybe not
   ReadResourceResult, // Needed for callback signatures
+  Request,
+  Notification,
   // RequestHandlerExtra, // Needed for callback signatures - Import from specific path
   // Variables // Needed for template callback signatures - Import from specific path
 } from "@modelcontextprotocol/sdk/types.js";

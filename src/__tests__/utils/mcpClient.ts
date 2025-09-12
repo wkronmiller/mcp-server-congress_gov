@@ -5,6 +5,7 @@ import {
   CallToolResult,
   ListToolsResult,
 } from "@modelcontextprotocol/sdk/types.js";
+import { ResourceNotFoundError } from "../../utils/errors.js";
 
 /**
  * A simplified test client that directly calls server methods
@@ -21,15 +22,16 @@ export class TestMcpClient {
    * List available tools
    */
   async listTools(): Promise<ListToolsResult> {
-    // Access the server's internal tool registry
-    const tools = Array.from((this.server as any)._tools.values()).map(
-      (tool: any) => ({
-        name: tool.name,
-        description: tool.description,
-        inputSchema: tool.inputSchema,
-      })
-    );
-
+    // Access the server's registered tools (internal but stable in SDK)
+    const registered = (this.server as any)._registeredTools as Record<
+      string,
+      any
+    >;
+    const tools = Object.entries(registered).map(([name, tool]) => ({
+      name,
+      description: tool.description,
+      inputSchema: tool.inputSchema,
+    }));
     return { tools };
   }
 
@@ -40,53 +42,68 @@ export class TestMcpClient {
     name: string,
     arguments_: Record<string, any>
   ): Promise<CallToolResult> {
-    // Get the tool handler from the server
-    const tool = (this.server as any)._tools.get(name);
-    if (!tool) {
-      throw new Error(`Tool ${name} not found`);
-    }
-
-    // Call the tool handler directly
-    const result = await tool.handler(arguments_, {});
-    return result;
+    // Call the registered tool callback directly
+    const registered = (this.server as any)._registeredTools as Record<
+      string,
+      any
+    >;
+    const tool = registered[name];
+    if (!tool) throw new Error(`Tool ${name} not found`);
+    // The SDK normally validates args against tool.inputSchema before invoking callback.
+    // Tests provide valid inputs; invoke the callback directly.
+    const result = await tool.callback(arguments_, {});
+    return result as CallToolResult;
   }
 
   /**
    * List available resources
    */
   async listResources(): Promise<ListResourcesResult> {
-    // Access the server's internal resource registry
-    const resources = Array.from((this.server as any)._resources.values()).map(
-      (resource: any) => ({
-        uri: resource.uri,
-        name: resource.name,
-        description: resource.description,
-        mimeType: resource.mimeType,
-      })
-    );
-
-    return { resources };
+    // Combine fixed and template resources (templates returned via list callback when available)
+    const registeredResources = (this.server as any)
+      ._registeredResources as Record<string, any>;
+    const fixed = Object.entries(registeredResources).map(([uri, res]) => ({
+      uri,
+      name: res.name,
+      ...(res.metadata || {}),
+    }));
+    // Templates require list callback to enumerate; omit here for simplicity
+    return { resources: fixed };
   }
 
   /**
    * Read a resource by URI
    */
   async readResource(uri: string): Promise<ReadResourceResult> {
-    // Find the resource handler that matches this URI
-    const resourceHandlers =
-      (this.server as any)._resourceHandlers || new Map();
-
-    for (const [pattern, handler] of resourceHandlers) {
-      if (typeof pattern === "string" && uri.startsWith(pattern)) {
-        const result = await handler(uri);
-        return result;
-      } else if (pattern instanceof RegExp && pattern.test(uri)) {
-        const result = await handler(uri);
-        return result;
+    const url = new URL(uri);
+    // Check exact resources first
+    const registeredResources = (this.server as any)
+      ._registeredResources as Record<string, any>;
+    const exact = registeredResources[url.toString()];
+    if (exact) {
+      const res = await exact.readCallback(url, {});
+      return res as ReadResourceResult;
+    }
+    // Then check templates for a match
+    const templates = (this.server as any)
+      ._registeredResourceTemplates as Record<string, any>;
+    for (const template of Object.values(templates)) {
+      let variables = template.resourceTemplate.uriTemplate.match(
+        url.toString()
+      );
+      // Fallback: attempt match ignoring query string
+      if (!variables) {
+        const noQuery = uri.split("?")[0];
+        variables = template.resourceTemplate.uriTemplate.match(noQuery);
+      }
+      if (variables) {
+        const res = await template.readCallback(url, variables, {});
+        return res as ReadResourceResult;
       }
     }
-
-    throw new Error(`No resource handler found for URI: ${uri}`);
+    throw new ResourceNotFoundError(
+      `No resource handler found for URI: ${uri}`
+    );
   }
 }
 

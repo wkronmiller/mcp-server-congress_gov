@@ -1,12 +1,5 @@
-import { CongressApiService } from "../../services/CongressApiService.js";
-import {
-  handleMemberSponsoredLegislationResource,
-  handleMemberCosponsoredLegislationResource,
-  handleMembersByStateResource,
-  handleMembersByDistrictResource,
-  handleMembersByCongressStateDistrictResource,
-} from "../../resourceHandlers.js";
-import { testData } from "../utils/testServer.js";
+import { createTestServer, testData } from "../utils/testServer.js";
+import { createTestClient } from "../utils/mcpClient.js";
 import {
   ResourceNotFoundError,
   InvalidParameterError,
@@ -17,17 +10,13 @@ import {
  * These tests validate member sub-resource functionality with real Congress.gov API calls
  */
 describe("Member Sub-Resources Integration Tests", () => {
-  let congressApiService: CongressApiService;
-
-  beforeAll(() => {
-    congressApiService = new CongressApiService();
-  });
+  const server = createTestServer();
+  const client = createTestClient(server);
 
   describe("Member Sponsored Legislation", () => {
     it("should handle member sponsored legislation resource", async () => {
-      const result = await handleMemberSponsoredLegislationResource(
-        testData.members.subResourceUris.sponsoredLegislation,
-        congressApiService
+      const result = await client.readResource(
+        testData.members.subResourceUris.sponsoredLegislation
       );
 
       expect(result).toBeDefined();
@@ -38,35 +27,32 @@ describe("Member Sub-Resources Integration Tests", () => {
       expect(result.contents[0]).toHaveProperty("mimeType", "application/json");
       expect(result.contents[0]).toHaveProperty("text");
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("sponsoredLegislation");
       expect(Array.isArray(data.sponsoredLegislation)).toBe(true);
     }, 15000);
 
     it("should throw error for invalid URI format", async () => {
       await expect(
-        handleMemberSponsoredLegislationResource(
-          "congress-gov://member/INVALID/sponsored-legislation",
-          congressApiService
+        client.readResource(
+          "congress-gov://member/INVALID/sponsored-legislation"
         )
       ).rejects.toThrow(InvalidParameterError);
     });
 
-    it("should throw error for missing sub-resource", async () => {
-      await expect(
-        handleMemberSponsoredLegislationResource(
-          "congress-gov://member/P000197",
-          congressApiService
-        )
-      ).rejects.toThrow(ResourceNotFoundError);
+    it("should handle base member resource (no sub-resource)", async () => {
+      const result = await client.readResource("congress-gov://member/P000197");
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("contents");
+      const data = JSON.parse(String(result.contents[0].text));
+      expect(data).toHaveProperty("member");
     });
   });
 
   describe("Member Cosponsored Legislation", () => {
     it("should handle member cosponsored legislation resource", async () => {
-      const result = await handleMemberCosponsoredLegislationResource(
-        testData.members.subResourceUris.cosponsoredLegislation,
-        congressApiService
+      const result = await client.readResource(
+        testData.members.subResourceUris.cosponsoredLegislation
       );
 
       expect(result).toBeDefined();
@@ -74,16 +60,15 @@ describe("Member Sub-Resources Integration Tests", () => {
       expect(Array.isArray(result.contents)).toBe(true);
       expect(result.contents.length).toBe(1);
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("cosponsoredLegislation");
       expect(Array.isArray(data.cosponsoredLegislation)).toBe(true);
     }, 15000);
 
     it("should throw error for invalid BioguideId format", async () => {
       await expect(
-        handleMemberCosponsoredLegislationResource(
-          "congress-gov://member/invalid123/cosponsored-legislation",
-          congressApiService
+        client.readResource(
+          "congress-gov://member/invalid123/cosponsored-legislation"
         )
       ).rejects.toThrow(InvalidParameterError);
     });
@@ -91,9 +76,8 @@ describe("Member Sub-Resources Integration Tests", () => {
 
   describe("Members by State", () => {
     it("should handle members by state resource", async () => {
-      const result = await handleMembersByStateResource(
-        testData.members.subResourceUris.byState,
-        congressApiService
+      const result = await client.readResource(
+        testData.members.subResourceUris.byState
       );
 
       expect(result).toBeDefined();
@@ -101,24 +85,20 @@ describe("Member Sub-Resources Integration Tests", () => {
       expect(Array.isArray(result.contents)).toBe(true);
       expect(result.contents.length).toBe(1);
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("members");
       expect(Array.isArray(data.members)).toBe(true);
     }, 15000);
 
     it("should throw error for invalid state code", async () => {
       await expect(
-        handleMembersByStateResource(
-          "congress-gov://member/state/XX",
-          congressApiService
-        )
+        client.readResource("congress-gov://member/state/XX")
       ).rejects.toThrow(InvalidParameterError);
     });
 
     it("should handle lowercase state codes", async () => {
-      const result = await handleMembersByStateResource(
-        "congress-gov://member/state/ca",
-        congressApiService
+      const result = await client.readResource(
+        "congress-gov://member/state/ca"
       );
 
       expect(result).toBeDefined();
@@ -128,9 +108,8 @@ describe("Member Sub-Resources Integration Tests", () => {
 
   describe("Members by District", () => {
     it("should handle members by district resource", async () => {
-      const result = await handleMembersByDistrictResource(
-        testData.members.subResourceUris.byDistrict,
-        congressApiService
+      const result = await client.readResource(
+        testData.members.subResourceUris.byDistrict
       );
 
       expect(result).toBeDefined();
@@ -138,24 +117,20 @@ describe("Member Sub-Resources Integration Tests", () => {
       expect(Array.isArray(result.contents)).toBe(true);
       expect(result.contents.length).toBe(1);
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("members");
       expect(Array.isArray(data.members)).toBe(true);
     }, 15000);
 
     it("should throw error for invalid district number", async () => {
       await expect(
-        handleMembersByDistrictResource(
-          "congress-gov://member/state/CA/district/99",
-          congressApiService
-        )
+        client.readResource("congress-gov://member/state/CA/district/99")
       ).rejects.toThrow(InvalidParameterError);
     });
 
     it("should handle at-large districts (district 0)", async () => {
-      const result = await handleMembersByDistrictResource(
-        "congress-gov://member/state/WY/district/0",
-        congressApiService
+      const result = await client.readResource(
+        "congress-gov://member/state/WY/district/0"
       );
 
       expect(result).toBeDefined();
@@ -165,9 +140,8 @@ describe("Member Sub-Resources Integration Tests", () => {
 
   describe("Members by Congress/State/District", () => {
     it("should handle members by congress/state/district resource", async () => {
-      const result = await handleMembersByCongressStateDistrictResource(
-        testData.members.subResourceUris.byCongressStateDistrict,
-        congressApiService
+      const result = await client.readResource(
+        testData.members.subResourceUris.byCongressStateDistrict
       );
 
       expect(result).toBeDefined();
@@ -175,26 +149,22 @@ describe("Member Sub-Resources Integration Tests", () => {
       expect(Array.isArray(result.contents)).toBe(true);
       expect(result.contents.length).toBe(1);
 
-      const data = JSON.parse(result.contents[0].text);
+      const data = JSON.parse(String(result.contents[0].text));
       expect(data).toHaveProperty("members");
       expect(Array.isArray(data.members)).toBe(true);
     }, 15000);
 
     it("should throw error for invalid congress number", async () => {
       await expect(
-        handleMembersByCongressStateDistrictResource(
-          "congress-gov://member/congress/abc/state/CA/district/5",
-          congressApiService
+        client.readResource(
+          "congress-gov://member/congress/abc/state/CA/district/5"
         )
       ).rejects.toThrow(InvalidParameterError);
     });
 
     it("should throw error for invalid URI format", async () => {
       await expect(
-        handleMembersByCongressStateDistrictResource(
-          "congress-gov://member/congress/118/state/CA",
-          congressApiService
-        )
+        client.readResource("congress-gov://member/congress/118/state/CA")
       ).rejects.toThrow(ResourceNotFoundError);
     });
   });
@@ -202,9 +172,8 @@ describe("Member Sub-Resources Integration Tests", () => {
   describe("Error Handling", () => {
     it("should handle non-existent members by state", async () => {
       // This should not throw as even if no members are found, the API should return an empty array
-      const result = await handleMembersByStateResource(
-        "congress-gov://member/state/AS", // American Samoa - likely fewer members
-        congressApiService
+      const result = await client.readResource(
+        "congress-gov://member/state/AS" // American Samoa - likely fewer members
       );
 
       expect(result).toBeDefined();

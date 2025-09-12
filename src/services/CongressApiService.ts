@@ -416,8 +416,10 @@ export class CongressApiService {
     params: CommitteeSubResourceParams,
     pagination?: PaginationParams
   ): Promise<any> {
-    if(params.chamber !== 'house') {
-      throw new InvalidParameterError(`House communications are only available for House committees. Chamber provided: ${params.chamber}`);
+    if (params.chamber !== "house") {
+      throw new InvalidParameterError(
+        `House communications are only available for House committees. Chamber provided: ${params.chamber}`
+      );
     }
     const endpoint = `/committee/${params.chamber}/${params.committeeCode}/house-communication`;
     const queryParams: Record<string, string | number> = {};
@@ -437,8 +439,10 @@ export class CongressApiService {
     params: CommitteeSubResourceParams,
     pagination?: PaginationParams
   ): Promise<any> {
-    if(params.chamber !== 'senate') {
-      throw new InvalidParameterError(`Senate communications are only available for Senate committees. Chamber provided: ${params.chamber}`);
+    if (params.chamber !== "senate") {
+      throw new InvalidParameterError(
+        `Senate communications are only available for Senate committees. Chamber provided: ${params.chamber}`
+      );
     }
     const endpoint = `/committee/${params.chamber}/${params.committeeCode}/senate-communication`;
     const queryParams: Record<string, string | number> = {};

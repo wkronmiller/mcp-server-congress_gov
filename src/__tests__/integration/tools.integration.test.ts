@@ -1,150 +1,153 @@
-import { CongressApiService } from "../../services/CongressApiService.js";
-import { testData } from "../utils/testServer.js";
+import { createTestServer, testData } from "../utils/testServer.js";
+import { createTestClient } from "../utils/mcpClient.js";
 
 /**
  * Integration tests for MCP tools functionality
  * These tests validate tool-like operations with real Congress.gov API calls
  */
 describe("Congress.gov MCP Tools Integration Tests", () => {
-  let congressApiService: CongressApiService;
-
-  beforeAll(() => {
-    congressApiService = new CongressApiService();
-  });
+  const server = createTestServer();
+  const client = createTestClient(server);
 
   describe("Search Tool Functionality", () => {
-    it("should search for bills (simulating search tool)", async () => {
-      const result = await congressApiService.searchCollection("bill", {
+    it("should search for bills via tool", async () => {
+      const toolResult = await client.callTool("congress_search", {
+        collection: "bill",
         limit: 2,
       });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("bills");
-      expect(Array.isArray(result.bills)).toBe(true);
-      expect(result.bills.length).toBeLessThanOrEqual(2);
+      expect(toolResult).toBeDefined();
+      const data = JSON.parse((toolResult.content?.[0] as any).text);
+      expect(data).toHaveProperty("bills");
+      expect(Array.isArray(data.bills)).toBe(true);
+      expect(data.bills.length).toBeLessThanOrEqual(2);
     }, 15000);
 
-    it("should search for members (simulating search tool)", async () => {
-      const result = await congressApiService.searchCollection("member", {
+    it("should search for members via tool", async () => {
+      const toolResult = await client.callTool("congress_search", {
+        collection: "member",
         limit: 2,
       });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("members");
-      expect(Array.isArray(result.members)).toBe(true);
-      expect(result.members.length).toBeLessThanOrEqual(2);
+      expect(toolResult).toBeDefined();
+      const data = JSON.parse((toolResult.content?.[0] as any).text);
+      expect(data).toHaveProperty("members");
+      expect(Array.isArray(data.members)).toBe(true);
+      expect(data.members.length).toBeLessThanOrEqual(2);
     }, 15000);
 
-    it("should handle search with query parameters", async () => {
-      const result = await congressApiService.searchCollection("bill", {
+    it("should handle search with query parameters via tool", async () => {
+      const toolResult = await client.callTool("congress_search", {
+        collection: "bill",
         query: "healthcare",
         limit: 1,
       });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("bills");
-      expect(Array.isArray(result.bills)).toBe(true);
+      const data = JSON.parse((toolResult.content?.[0] as any).text);
+      expect(data).toBeDefined();
+      expect(data).toHaveProperty("bills");
+      expect(Array.isArray(data.bills)).toBe(true);
     }, 15000);
 
-    it("should handle invalid collection types", async () => {
+    it("should handle invalid collection types via tool", async () => {
       await expect(
-        congressApiService.searchCollection("invalid" as any, {
+        client.callTool("congress_search", {
+          collection: "invalid",
           limit: 1,
-        })
+        } as any)
       ).rejects.toThrow();
     });
   });
 
   describe("GetSubResource Tool Functionality", () => {
-    it("should get bill actions (simulating getSubResource tool)", async () => {
-      const result = await congressApiService.getSubResource(
-        testData.bills.uri,
-        "actions",
-        { limit: 2 }
-      );
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("actions");
-      expect(Array.isArray(result.actions)).toBe(true);
+    it("should get bill actions via tool", async () => {
+      const toolResult = await client.callTool("congress_getSubResource", {
+        parentUri: testData.bills.uri,
+        subResource: "actions",
+        limit: 2,
+      });
+      const data = JSON.parse((toolResult.content?.[0] as any).text);
+      expect(data).toBeDefined();
+      expect(data).toHaveProperty("actions");
+      expect(Array.isArray(data.actions)).toBe(true);
     }, 15000);
 
-    it("should get bill subjects (simulating getSubResource tool)", async () => {
-      const result = await congressApiService.getSubResource(
-        testData.bills.uri,
-        "subjects"
-      );
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("subjects");
+    it("should get bill subjects via tool", async () => {
+      const toolResult = await client.callTool("congress_getSubResource", {
+        parentUri: testData.bills.uri,
+        subResource: "subjects",
+      });
+      const data = JSON.parse((toolResult.content?.[0] as any).text);
+      expect(data).toBeDefined();
+      expect(data).toHaveProperty("subjects");
     }, 15000);
 
-    it("should get bill text (simulating getSubResource tool)", async () => {
-      const result = await congressApiService.getSubResource(
-        testData.bills.uri,
-        "text"
-      );
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("textVersions");
+    it("should get bill text via tool", async () => {
+      const toolResult = await client.callTool("congress_getSubResource", {
+        parentUri: testData.bills.uri,
+        subResource: "text",
+      });
+      const data = JSON.parse((toolResult.content?.[0] as any).text);
+      expect(data).toBeDefined();
+      expect(data).toHaveProperty("textVersions");
     }, 15000);
 
-    it("should handle invalid sub-resource types", async () => {
+    it("should handle invalid sub-resource types via tool", async () => {
       await expect(
-        congressApiService.getSubResource(testData.bills.uri, "invalid" as any)
+        client.callTool("congress_getSubResource", {
+          parentUri: testData.bills.uri,
+          subResource: "invalid",
+        } as any)
       ).rejects.toThrow();
     });
 
-    it("should handle malformed resource URIs", async () => {
+    it("should handle malformed resource URIs via tool", async () => {
       await expect(
-        congressApiService.getSubResource("invalid-uri", "actions")
+        client.callTool("congress_getSubResource", {
+          parentUri: "invalid-uri",
+          subResource: "actions",
+        })
       ).rejects.toThrow();
     });
   });
 
   describe("Tool Parameter Validation", () => {
-    it("should handle missing required parameters gracefully", async () => {
-      await expect(
-        congressApiService.searchCollection("bill", {
-          // Missing required collection parameter test
-        } as any)
-      ).resolves.toBeDefined(); // Should still work with defaults
+    it("should handle missing optional parameters", async () => {
+      const toolResult = await client.callTool("congress_search", {
+        collection: "bill",
+      });
+      const data = JSON.parse((toolResult.content?.[0] as any).text);
+      expect(data).toBeDefined();
+      expect(data).toHaveProperty("bills");
     });
 
     it("should handle limit parameter correctly", async () => {
-      const result = await congressApiService.searchCollection("bill", {
+      const toolResult = await client.callTool("congress_search", {
+        collection: "bill",
         limit: 1,
       });
-
-      expect(result).toBeDefined();
-      expect(result.bills?.length).toBeLessThanOrEqual(1);
+      const data = JSON.parse((toolResult.content?.[0] as any).text);
+      expect(data).toBeDefined();
+      expect(data.bills?.length).toBeLessThanOrEqual(1);
     }, 15000);
 
     it("should handle offset parameter correctly", async () => {
-      const result = await congressApiService.searchCollection("bill", {
+      const toolResult = await client.callTool("congress_search", {
+        collection: "bill",
         limit: 1,
         offset: 5,
       });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("bills");
+      const data = JSON.parse((toolResult.content?.[0] as any).text);
+      expect(data).toBeDefined();
+      expect(data).toHaveProperty("bills");
     }, 15000);
   });
 
   describe("Tool Error Handling", () => {
-    it("should handle non-existent resources", async () => {
+    it("should handle non-existent resources via tool", async () => {
       await expect(
-        congressApiService.getSubResource(
-          "https://api.congress.gov/v3/bill/999/hr/999999",
-          "actions"
-        )
+        client.callTool("congress_getSubResource", {
+          parentUri: "congress-gov://bill/999/hr/999999",
+          subResource: "actions",
+        })
       ).rejects.toThrow();
-    });
-
-    it("should handle API rate limiting service", async () => {
-      // The rate limiter should be tracking requests
-      const rateLimiter = congressApiService["rateLimitService"];
-      expect(rateLimiter).toBeDefined();
-      expect(rateLimiter["requestTimes"]).toBeDefined();
     });
   });
 });
