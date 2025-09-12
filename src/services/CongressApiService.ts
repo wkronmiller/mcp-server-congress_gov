@@ -5,15 +5,43 @@ import { CongressGovConfig } from "../types/configTypes.js";
 import {
   BillResourceParams,
   MemberResourceParams,
+  MemberSubResourceParams,
+  MembersByStateParams,
+  MembersByDistrictParams,
+  MembersByCongressStateDistrictParams,
   CongressResourceParams,
   CommitteeResourceParams,
+  CommitteeSubResourceParams,
   AmendmentResourceParams, // Assuming these exist or will be created
   LawResourceParams,
   LawListParams,
   LawCongressParams,
+  CommitteeReportResourceParams,
+  CommitteeReportTextParams,
+  CommitteePrintResourceParams,
+  CommitteePrintTextParams,
+  CommitteeMeetingResourceParams,
+  CommitteeHearingResourceParams,
+  NominationResourceParams,
+  NominationNomineeParams,
+  NominationSubResourceParams,
+  CongressionalRecordResourceParams,
+  DailyCongressionalRecordResourceParams,
+  DailyCongressionalRecordArticlesResourceParams,
+  BoundCongressionalRecordResourceParams,
+  HouseCommunicationResourceParams,
+  SenateCommunicationResourceParams,
+  HouseRequirementResourceParams,
+  HouseRequirementMatchingCommunicationsParams,
   PaginationParams,
-  SearchParams, // Define these types
-  // Add other specific param types as needed: NominationResourceParams, TreatyResourceParams, etc.
+  SearchParams,
+  TreatyResourceParams,
+  TreatyPartitionResourceParams,
+  TreatySubResourceParams,
+  CRSReportResourceParams,
+  SummariesResourceParams,
+  HouseVoteResourceParams,
+  HouseVoteMembersResourceParams,
 } from "../types/index.js"; // Import needed param types
 import {
   ApiError,
@@ -223,6 +251,92 @@ export class CongressApiService {
     return this.executeRequest(endpoint);
   }
 
+  // --- Member Sub-Resource Methods ---
+
+  public async getMemberSponsoredLegislation(
+    params: MemberSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/member/${params.bioguideId}/sponsored-legislation`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getMemberCosponsoredLegislation(
+    params: MemberSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/member/${params.bioguideId}/cosponsored-legislation`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getMembersByState(
+    params: MembersByStateParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/member`;
+    const queryParams: Record<string, string | number> = {
+      stateCode: params.stateCode,
+    };
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getMembersByDistrict(
+    params: MembersByDistrictParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/member`;
+    const queryParams: Record<string, string | number> = {
+      stateCode: params.stateCode,
+      district: params.district,
+    };
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getMembersByCongressStateDistrict(
+    params: MembersByCongressStateDistrictParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/member`;
+    const queryParams: Record<string, string | number> = {
+      congress: params.congress,
+      stateCode: params.stateCode,
+      district: params.district,
+    };
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
   public async getCongressDetails(
     params: CongressResourceParams
   ): Promise<any> {
@@ -238,6 +352,98 @@ export class CongressApiService {
     const queryParams: Record<string, string | number> = {};
     if (params.congress) {
       queryParams.congress = params.congress;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  // --- Committee Sub-Resource Methods ---
+
+  public async getCommitteeBills(
+    params: CommitteeSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/committee/${params.chamber}/${params.committeeCode}/bills`;
+    const queryParams: Record<string, string | number> = {};
+    if (params.congress) {
+      queryParams.congress = params.congress;
+    }
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getCommitteeReports(
+    params: CommitteeSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/committee/${params.chamber}/${params.committeeCode}/reports`;
+    const queryParams: Record<string, string | number> = {};
+    if (params.congress) {
+      queryParams.congress = params.congress;
+    }
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getCommitteeNominations(
+    params: CommitteeSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/committee/${params.chamber}/${params.committeeCode}/nominations`;
+    const queryParams: Record<string, string | number> = {};
+    if (params.congress) {
+      queryParams.congress = params.congress;
+    }
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getCommitteeHouseCommunications(
+    params: CommitteeSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/committee/${params.chamber}/${params.committeeCode}/house-communication`;
+    const queryParams: Record<string, string | number> = {};
+    if (params.congress) {
+      queryParams.congress = params.congress;
+    }
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  public async getCommitteeSenateCommunications(
+    params: CommitteeSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/committee/${params.chamber}/${params.committeeCode}/senate-communication`;
+    const queryParams: Record<string, string | number> = {};
+    if (params.congress) {
+      queryParams.congress = params.congress;
+    }
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
     }
     return this.executeRequest(endpoint, queryParams);
   }
@@ -445,11 +651,54 @@ export class CongressApiService {
     return { laws: [] };
   }
 
+  // --- Committee Document Methods ---
+
+  public async getCommitteeReportDetails(
+    params: CommitteeReportResourceParams
+  ): Promise<any> {
+    const endpoint = `/committee-report/${params.congress}/${params.reportType}/${params.reportNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  public async getCommitteeReportText(
+    params: CommitteeReportTextParams
+  ): Promise<any> {
+    const endpoint = `/committee-report/${params.congress}/${params.reportType}/${params.reportNumber}/text`;
+    return this.executeRequest(endpoint);
+  }
+
+  public async getCommitteePrintDetails(
+    params: CommitteePrintResourceParams
+  ): Promise<any> {
+    const endpoint = `/committee-print/${params.congress}/${params.chamber}/${params.jacketNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  public async getCommitteePrintText(
+    params: CommitteePrintTextParams
+  ): Promise<any> {
+    const endpoint = `/committee-print/${params.congress}/${params.chamber}/${params.jacketNumber}/text`;
+    return this.executeRequest(endpoint);
+  }
+
+  public async getCommitteeMeetingDetails(
+    params: CommitteeMeetingResourceParams
+  ): Promise<any> {
+    const endpoint = `/committee-meeting/${params.congress}/${params.chamber}/${params.eventId}`;
+    return this.executeRequest(endpoint);
+  }
+
+  public async getCommitteeHearingDetails(
+    params: CommitteeHearingResourceParams
+  ): Promise<any> {
+    const endpoint = `/hearing/${params.congress}/${params.chamber}/${params.jacketNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
   // Add methods for other specific types as needed, mapping params to endpoint structure
   // public async getNominationDetails(params: NominationResourceParams): Promise<any> { ... }
   // public async getTreatyDetails(params: TreatyResourceParams): Promise<any> { ... }
   // public async getCommunicationDetails(params: CommunicationResourceParams): Promise<any> { ... }
-  // public async getCommitteeReportDetails(params: CommitteeReportResourceParams): Promise<any> { ... }
   // public async getCongressionalRecordDetails(params: CongressionalRecordResourceParams): Promise<any> { ... }
 
   // --- List/Search Method (RFC-003) ---
@@ -704,13 +953,306 @@ export class CongressApiService {
     return this.executeRequest(endpoint, queryParams);
   }
 
-  // --- Add specific wrappers for getSubResource if needed for clarity or type safety ---
-  // Example:
-  // public async getMemberSponsoredLegislation(params: MemberResourceParams, pagination?: PaginationParams): Promise<any> {
-  //     const parentUri = `congress-gov://member/${params.memberId}`;
-  //     return this.getSubResource(parentUri, 'sponsored-legislation', pagination);
-  // }
-  // ... etc.
+  // --- Nomination Resource Methods ---
+
+  /**
+   * Get details about a specific nomination.
+   */
+  public async getNominationDetails(
+    params: NominationResourceParams
+  ): Promise<any> {
+    const endpoint = `/nomination/${params.congress}/${params.nominationNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  /**
+   * Get details about a specific nominee within a nomination.
+   */
+  public async getNominationNominee(
+    params: NominationNomineeParams
+  ): Promise<any> {
+    const endpoint = `/nomination/${params.congress}/${params.nominationNumber}/${params.ordinal}`;
+    return this.executeRequest(endpoint);
+  }
+
+  /**
+   * Get actions for a specific nomination.
+   */
+  public async getNominationActions(
+    params: NominationSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/nomination/${params.congress}/${params.nominationNumber}/actions`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  /**
+   * Get committees associated with a specific nomination.
+   */
+  public async getNominationCommittees(
+    params: NominationSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/nomination/${params.congress}/${params.nominationNumber}/committees`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  /**
+   * Get hearings related to a specific nomination.
+   */
+  public async getNominationHearings(
+    params: NominationSubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/nomination/${params.congress}/${params.nominationNumber}/hearings`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  // --- Congressional Record Methods ---
+
+  /**
+   * Get general Congressional Record list.
+   */
+  public async getCongressionalRecord(
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = "/congressional-record";
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  /**
+   * Get Daily Congressional Record details by volume and issue number.
+   */
+  public async getDailyCongressionalRecord(
+    params: DailyCongressionalRecordResourceParams
+  ): Promise<any> {
+    const endpoint = `/daily-congressional-record/${params.volumeNumber}/${params.issueNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  /**
+   * Get Daily Congressional Record articles by volume and issue number.
+   */
+  public async getDailyCongressionalRecordArticles(
+    params: DailyCongressionalRecordArticlesResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/daily-congressional-record/${params.volumeNumber}/${params.issueNumber}/articles`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  /**
+   * Get Bound Congressional Record by date.
+   */
+  public async getBoundCongressionalRecord(
+    params: BoundCongressionalRecordResourceParams
+  ): Promise<any> {
+    const endpoint = `/bound-congressional-record/${params.year}/${params.month}/${params.day}`;
+    return this.executeRequest(endpoint);
+  }
+
+  // --- Communication Resource Methods ---
+
+  /**
+   * Get details about a specific House Communication.
+   */
+  public async getHouseCommunicationDetails(
+    params: HouseCommunicationResourceParams
+  ): Promise<any> {
+    const endpoint = `/house-communication/${params.congress}/${params.communicationType}/${params.communicationNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  /**
+   * Get details about a specific Senate Communication.
+   */
+  public async getSenateCommunicationDetails(
+    params: SenateCommunicationResourceParams
+  ): Promise<any> {
+    const endpoint = `/senate-communication/${params.congress}/${params.communicationType}/${params.communicationNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  /**
+   * Get details about a specific House Requirement.
+   */
+  public async getHouseRequirementDetails(
+    params: HouseRequirementResourceParams
+  ): Promise<any> {
+    const endpoint = `/house-requirement/${params.requirementNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  /**
+   * Get matching communications for a specific House Requirement.
+   */
+  public async getHouseRequirementMatchingCommunications(
+    params: HouseRequirementMatchingCommunicationsParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/house-requirement/${params.requirementNumber}/matching-communications`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  // --- Treaty Resource Methods ---
+
+  /**
+   * Get details about a specific treaty.
+   */
+  public async getTreatyDetails(params: TreatyResourceParams): Promise<any> {
+    const endpoint = `/treaty/${params.congress}/${params.treatyNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  /**
+   * Get details about a partitioned treaty.
+   */
+  public async getTreatyPartitionDetails(
+    params: TreatyPartitionResourceParams
+  ): Promise<any> {
+    const endpoint = `/treaty/${params.congress}/${params.treatyNumber}/${params.treatySuffix}`;
+    return this.executeRequest(endpoint);
+  }
+
+  /**
+   * Get actions for a specific treaty.
+   */
+  public async getTreatyActions(
+    params: TreatySubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/treaty/${params.congress}/${params.treatyNumber}/actions`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  /**
+   * Get committees associated with a specific treaty.
+   */
+  public async getTreatyCommittees(
+    params: TreatySubResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/treaty/${params.congress}/${params.treatyNumber}/committees`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  // --- CRS Report Resource Methods ---
+
+  /**
+   * Get details about a specific CRS report.
+   */
+  public async getCRSReportDetails(
+    params: CRSReportResourceParams
+  ): Promise<any> {
+    const endpoint = `/crsreport/${params.reportNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  // --- Summaries Resource Methods ---
+
+  /**
+   * Get bill summaries for a specific congress and bill type.
+   */
+  public async getSummaries(
+    params: SummariesResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/summaries/${params.congress}/${params.billType}`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
+
+  // --- House Vote Resource Methods (Beta) ---
+
+  /**
+   * Get details about a specific House vote.
+   */
+  public async getHouseVoteDetails(
+    params: HouseVoteResourceParams
+  ): Promise<any> {
+    const endpoint = `/house-vote/${params.congress}/${params.session}/${params.voteNumber}`;
+    return this.executeRequest(endpoint);
+  }
+
+  /**
+   * Get member votes for a specific House vote.
+   */
+  public async getHouseVoteMembers(
+    params: HouseVoteMembersResourceParams,
+    pagination?: PaginationParams
+  ): Promise<any> {
+    const endpoint = `/house-vote/${params.congress}/${params.session}/${params.voteNumber}/members`;
+    const queryParams: Record<string, string | number> = {};
+    if (pagination?.limit !== undefined) {
+      queryParams["limit"] = pagination.limit;
+    }
+    if (pagination?.offset !== undefined) {
+      queryParams["offset"] = pagination.offset;
+    }
+    return this.executeRequest(endpoint, queryParams);
+  }
 }
 
 // Note: Removed default singleton export. Instantiation should be handled by the caller (e.g., in createServer.ts)
