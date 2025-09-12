@@ -1,0 +1,24 @@
+# Dependencies and build output
+node_modules
+dist
+
+# VCS and CI
+.git
+.gitignore
+.husky
+
+# Tests and coverage
+coverage
+jest.config.js
+src/__tests__
+
+# Environment and local files
+.env
+.env.*
+*.log
+
+# Editor/OS
+.DS_Store
+.vscode
+.idea
+

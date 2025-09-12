@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  mcp-congress:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-congress:latest
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: unless-stopped
+    # No ports published or exposed; service is internal-only
+
