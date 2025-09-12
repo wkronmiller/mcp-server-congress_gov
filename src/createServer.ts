@@ -791,9 +791,11 @@ export function createServer(): McpServer {
 
   const readBillTypesCallback = async (
     uri: URL,
-    variables: Variables,
     extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
+    logger.debug("Handling readBillTypesCallback", {
+      uri: uri.toString(),
+    });
     return handleBillTypesResource(uri.toString());
   };
 
@@ -1599,7 +1601,7 @@ export function createServer(): McpServer {
   // Reference Resources
   server.resource(
     "Bill Types Reference",
-    new ResourceTemplate("congress-gov://bill-types", { list: undefined }),
+    "congress-gov://bill-types",
     {
       description:
         "Complete list of valid bill types with descriptions and examples",
