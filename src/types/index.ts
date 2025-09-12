@@ -1,4 +1,4 @@
-﻿// Export all types and interfaces from this barrel file
+// Export all types and interfaces from this barrel file
 export * from "./exampleServiceTypes.js";
 export * from "./billTypes.js";
 export * from "./memberTypes.js";
@@ -10,6 +10,10 @@ export * from "./treatyTypes.js"; // Added
 export * from "./communicationTypes.js"; // Added
 export * from "./committeeReportTypes.js"; // Added
 export * from "./congressionalRecordTypes.js"; // Added
+export * from "./lawTypes.js"; // Added
+export * from "./crsTypes.js"; // Added
+export * from "./summaryTypes.js"; // Added
+export * from "./houseVoteTypes.js"; // Added
 export * from "./configTypes.js";
 export * from "./commonTypes.js"; // Added
 
