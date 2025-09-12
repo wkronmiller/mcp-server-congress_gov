@@ -1,4 +1,4 @@
-﻿![CongressMCPServer](assets/logo.svg)
+![CongressMCPServer](assets/logo.svg)
 
 # Congress.gov API MCP Server
 
@@ -78,7 +78,107 @@ This implements the [MCP Streamable HTTP specification](https://modelcontextprot
 
 Use the `access_mcp_resource` command/method with the appropriate URI.
 
-**Examples:**
+## Available Resources
+
+### Core Legislative Resources
+
+#### Bills and Bill Subresources
+
+- **Bill Details:** `congress-gov://bill/{congress}/{billType}/{billNumber}`
+- **Bill Actions:** `congress-gov://bill/{congress}/{billType}/{billNumber}/actions`
+- **Bill Amendments:** `congress-gov://bill/{congress}/{billType}/{billNumber}/amendments`
+- **Bill Committees:** `congress-gov://bill/{congress}/{billType}/{billNumber}/committees`
+- **Bill Cosponsors:** `congress-gov://bill/{congress}/{billType}/{billNumber}/cosponsors`
+- **Bill Related Bills:** `congress-gov://bill/{congress}/{billType}/{billNumber}/relatedbills`
+- **Bill Subjects:** `congress-gov://bill/{congress}/{billType}/{billNumber}/subjects`
+- **Bill Summaries:** `congress-gov://bill/{congress}/{billType}/{billNumber}/summaries`
+- **Bill Text:** `congress-gov://bill/{congress}/{billType}/{billNumber}/text`
+- **Bill Titles:** `congress-gov://bill/{congress}/{billType}/{billNumber}/titles`
+
+#### Amendments and Amendment Subresources
+
+- **Amendment Details:** `congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}`
+- **Amendment Actions:** `congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}/actions`
+- **Amendment Cosponsors:** `congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}/cosponsors`
+- **Amendment Amendments:** `congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}/amendments`
+- **Amendment Text:** `congress-gov://amendment/{congress}/{amendmentType}/{amendmentNumber}/text`
+
+#### Members and Member Subresources
+
+- **Member Details:** `congress-gov://member/{memberId}`
+- **Member Sponsored Legislation:** `congress-gov://member/{bioguideId}/sponsored-legislation`
+- **Member Cosponsored Legislation:** `congress-gov://member/{bioguideId}/cosponsored-legislation`
+- **Members by State:** `congress-gov://member/state/{stateCode}`
+- **Members by District:** `congress-gov://member/state/{stateCode}/district/{district}`
+- **Members by Congress/State/District:** `congress-gov://member/congress/{congress}/state/{stateCode}/district/{district}`
+
+#### Committees and Committee Subresources
+
+- **Committee Details:** `congress-gov://committee/{chamber}/{committeeCode}`
+- **Committee Bills:** `congress-gov://committee/{chamber}/{committeeCode}/bills`
+- **Committee Reports:** `congress-gov://committee/{chamber}/{committeeCode}/reports`
+- **Committee Nominations:** `congress-gov://committee/{chamber}/{committeeCode}/nominations`
+- **Committee House Communications:** `congress-gov://committee/{chamber}/{committeeCode}/house-communication`
+- **Committee Senate Communications:** `congress-gov://committee/{chamber}/{committeeCode}/senate-communication`
+
+#### Nominations and Nomination Subresources
+
+- **Nomination Details:** `congress-gov://nomination/{congress}/{nominationNumber}`
+- **Individual Nominee:** `congress-gov://nomination/{congress}/{nominationNumber}/nominee/{ordinal}`
+- **Nomination Actions:** `congress-gov://nomination/{congress}/{nominationNumber}/actions`
+- **Nomination Committees:** `congress-gov://nomination/{congress}/{nominationNumber}/committees`
+- **Nomination Hearings:** `congress-gov://nomination/{congress}/{nominationNumber}/hearings`
+
+#### Congressional Record
+
+- **Congressional Record:** `congress-gov://congressional-record`
+- **Daily Congressional Record:** `congress-gov://daily-congressional-record/{volumeNumber}/{issueNumber}`
+- **Daily Record Articles:** `congress-gov://daily-congressional-record/{volumeNumber}/{issueNumber}/articles`
+- **Bound Congressional Record:** `congress-gov://bound-congressional-record/{year}/{month}/{day}`
+
+#### Communications
+
+- **House Communication:** `congress-gov://house-communication/{congress}/{communicationType}/{communicationNumber}`
+- **Senate Communication:** `congress-gov://senate-communication/{congress}/{communicationType}/{communicationNumber}`
+- **House Requirement:** `congress-gov://house-requirement/{requirementNumber}`
+- **House Requirement Matching Communications:** `congress-gov://house-requirement/{requirementNumber}/matching-communications`
+
+#### Treaties and Treaty Subresources
+
+- **Treaty Details:** `congress-gov://treaty/{congress}/{treatyNumber}`
+- **Treaty with Suffix:** `congress-gov://treaty/{congress}/{treatyNumber}/suffix/{treatySuffix}`
+- **Treaty Actions:** `congress-gov://treaty/{congress}/{treatyNumber}/actions`
+- **Treaty Committees:** `congress-gov://treaty/{congress}/{treatyNumber}/committees`
+
+#### Committee Documents
+
+- **Committee Report:** `congress-gov://committee-report/{congress}/{reportType}/{reportNumber}`
+- **Committee Report Text:** `congress-gov://committee-report/{congress}/{reportType}/{reportNumber}/text`
+- **Committee Print:** `congress-gov://committee-print/{congress}/{chamber}/{jacketNumber}`
+- **Committee Print Text:** `congress-gov://committee-print/{congress}/{chamber}/{jacketNumber}/text`
+- **Committee Meeting:** `congress-gov://committee-meeting/{congress}/{chamber}/{eventId}`
+- **Committee Hearing:** `congress-gov://hearing/{congress}/{chamber}/{jacketNumber}`
+
+#### Laws and Summaries
+
+- **Law Details:** `congress-gov://law/{congress}/{lawType}/{lawNumber}`
+- **Laws by Congress and Type:** `congress-gov://law/{congress}/{lawType}`
+- **Laws by Congress:** `congress-gov://law/{congress}`
+- **CRS Reports:** `congress-gov://crsreport/{reportNumber}`
+- **Bill Summaries:** `congress-gov://summaries/{congress}/{billType}`
+
+#### House Votes (Beta)
+
+- **House Vote:** `congress-gov://house-vote/{congress}/{session}/{voteNumber}`
+- **House Vote Members:** `congress-gov://house-vote/{congress}/{session}/{voteNumber}/members`
+
+#### General Information
+
+- **API Overview:** `congress-gov://info/overview`
+- **Current Congress:** `congress-gov://info/current-congress`
+- **Congress Details:** `congress-gov://congress/{congress}`
+
+## Resource Examples
 
 - **Get Bill H.R. 3076 (117th Congress):**
 
@@ -95,6 +195,33 @@ Use the `access_mcp_resource` command/method with the appropriate URI.
   <access_mcp_resource>
   <server_name>congress-server</server_name>
   <uri>congress-gov://member/P000197</uri>
+  </access_mcp_resource>
+  ```
+
+- **Get House Judiciary Committee Bills:**
+
+  ```
+  <access_mcp_resource>
+  <server_name>congress-server</server_name>
+  <uri>congress-gov://committee/house/hsju00/bills</uri>
+  </access_mcp_resource>
+  ```
+
+- **Get Presidential Nomination:**
+
+  ```
+  <access_mcp_resource>
+  <server_name>congress-server</server_name>
+  <uri>congress-gov://nomination/118/123</uri>
+  </access_mcp_resource>
+  ```
+
+- **Get Daily Congressional Record:**
+
+  ```
+  <access_mcp_resource>
+  <server_name>congress-server</server_name>
+  <uri>congress-gov://daily-congressional-record/169/123</uri>
   </access_mcp_resource>
   ```
 
