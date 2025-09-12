@@ -3,6 +3,9 @@ import { createServer } from "./createServer.js";
 import { logger } from "./utils/index.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 
+// Create single MCP server instance at module level
+const mcpServer = createServer();
+
 const main = async () => {
   try {
     // Get port from environment variable or use default
@@ -13,8 +16,8 @@ const main = async () => {
     // Create Express app for HTTP server
     const app = express();
 
-    // Store active server instances by session ID
-    const servers = new Map();
+    // Store active transport instances by session ID
+    const transports = new Map();
 
     // Handle SSE connection establishment (GET /sse)
     app.get("/sse", async (req: Request, res: Response) => {
@@ -24,18 +27,15 @@ const main = async () => {
         // Create transport with message endpoint
         const transport = new SSEServerTransport("/message", res);
 
-        // Create server instance
-        const server = createServer();
-
-        // Store server by session ID for message routing
-        servers.set(transport.sessionId, { server, transport });
+        // Store transport by session ID for message routing
+        transports.set(transport.sessionId, transport);
 
         // Set up cleanup on connection close
         transport.onclose = () => {
           logger.info("SSE connection closed", {
             sessionId: transport.sessionId,
           });
-          servers.delete(transport.sessionId);
+          transports.delete(transport.sessionId);
         };
 
         // Set up error handling
@@ -47,11 +47,11 @@ const main = async () => {
         };
 
         // Connect server to transport
-        await server.connect(transport);
+        await mcpServer.connect(transport);
 
         logger.info("MCP Server connected to SSE transport", {
           sessionId: transport.sessionId,
-          totalConnections: servers.size,
+          totalConnections: transports.size,
         });
       } catch (error) {
         logger.error("Failed to establish SSE connection", error);
@@ -68,8 +68,8 @@ const main = async () => {
         return;
       }
 
-      const serverInstance = servers.get(sessionId);
-      if (!serverInstance) {
+      const transport = transports.get(sessionId);
+      if (!transport) {
         res.status(404).send("Session not found");
         return;
       }
@@ -77,7 +77,7 @@ const main = async () => {
       logger.debug("Received message for session", { sessionId });
 
       try {
-        await serverInstance.transport.handlePostMessage(req, res);
+        await transport.handlePostMessage(req, res);
       } catch (error) {
         logger.error("Failed to handle POST message", { error, sessionId });
         if (!res.headersSent) {
