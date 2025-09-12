@@ -1,4 +1,4 @@
-![CongressMCPServer](assets/logo.svg)
+![CongressMCPServer](assets/logo.png)
 
 # Congress.gov API MCP Server
 
