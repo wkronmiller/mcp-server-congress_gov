@@ -34,6 +34,39 @@ export const BILL_TYPE_DESCRIPTIONS: Record<BillType, string> = {
 };
 
 /**
+ * Bill type information for reference purposes
+ */
+export interface BillTypeInfo {
+  /** The bill type code (e.g., "hr", "s") */
+  code: BillType;
+  /** Full name of the bill type */
+  name: string;
+  /** Detailed description of what this bill type is used for */
+  description: string;
+  /** Example bill numbers for this type */
+  examples: string[];
+  /** Which chamber originates this type of bill */
+  chamber: "house" | "senate" | "both";
+}
+
+/**
+ * Response interface for the bill types resource
+ */
+export interface BillTypesResponse {
+  /** List of all available bill types with their information */
+  billTypes: BillTypeInfo[];
+  /** Total number of bill types */
+  count: number;
+  /** Metadata about the response */
+  metadata: {
+    /** When this data was last updated */
+    lastUpdated: string;
+    /** Description of the resource */
+    description: string;
+  };
+}
+
+/**
  * Parameters extracted from bill resource URIs
  *
  * URI Format: congress-gov://bill/{congress}/{billType}/{billNumber}

@@ -34,3 +34,25 @@
 - **Async**: Prefer async/await over promises, handle AxiosError appropriately
 - **Validation**: Use Zod schemas for runtime validation
 - **Git Hooks**: Husky with lint-staged runs eslint --fix and prettier on commit
+
+## Available Resources
+
+### Reference Resources
+
+- **Bill Types** (`congress-gov://bill-types`): Complete list of valid bill types with descriptions and examples. Returns information about all 8 bill types (hr, s, hjres, sjres, hconres, sconres, hres, sres) including their full names, descriptions, example numbers, and originating chamber.
+
+### Congressional Data Resources
+
+- **Bills** (`congress-gov://bill/{congress}/{billType}/{billNumber}`): Individual bill information
+- **Bill Sub-resources**: Actions, amendments, committees, cosponsors, related bills, subjects, summaries, text, titles
+- **Members** (`congress-gov://member/{bioguideId}`): Member information and sponsored/cosponsored legislation
+- **Committees** (`congress-gov://committee/{chamber}/{code}`): Committee information and related documents
+- **Amendments** (`congress-gov://amendment/{congress}/{type}/{number}`): Amendment details and sub-resources
+- **Nominations** (`congress-gov://nomination/{congress}/{number}`): Presidential nomination information
+- **Treaties** (`congress-gov://treaty/{congress}/{number}`): Treaty information and related data
+- **Committee Reports & Prints**: Official committee publications
+- **Congressional Record**: Daily proceedings and bound volumes
+- **Communications**: House and Senate communications
+- **CRS Reports**: Congressional Research Service reports
+- **Summaries**: Bill summaries by Congress and type
+- **House Votes**: House voting records (Beta)

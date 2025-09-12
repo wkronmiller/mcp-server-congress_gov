@@ -13,6 +13,10 @@ import { logger } from "./utils/logger.js";
 import {
   BillResourceParams,
   VALID_BILL_TYPES,
+  BILL_TYPE_DESCRIPTIONS,
+  BillTypesResponse,
+  BillTypeInfo,
+  BillType,
   MemberResourceParams,
   CongressResourceParams,
   CommitteeResourceParams,
@@ -2251,5 +2255,111 @@ export async function handleHouseRequirementMatchingCommunicationsResource(
     return { contents: formatSuccessResponse(uri, data) };
   } catch (error) {
     handleResourceError(uri, error);
+  }
+}
+
+/**
+ * Handles the bill types reference resource.
+ * Returns a list of all valid bill types with descriptions.
+ *
+ * URI: congress-gov://bill-types
+ */
+export async function handleBillTypesResource(uri: string): Promise<any> {
+  logger.debug("Handling handleBillTypesResource", { uri });
+
+  if (uri !== "congress-gov://bill-types") {
+    throw new ResourceNotFoundError(`Invalid bill types resource URI: ${uri}`);
+  }
+
+  try {
+    // Build the bill types information from our constants
+    const billTypes: BillTypeInfo[] = VALID_BILL_TYPES.map((code) => {
+      const examples: string[] = [];
+      let chamber: "house" | "senate" | "both" = "both";
+
+      // Add specific examples and chamber info for each type
+      switch (code) {
+        case "hr":
+          examples.push("H.R. 1", "H.R. 3076", "H.R. 8245");
+          chamber = "house";
+          break;
+        case "s":
+          examples.push("S. 25", "S. 1234", "S. 3829");
+          chamber = "senate";
+          break;
+        case "hjres":
+          examples.push("H.J.Res. 1", "H.J.Res. 15");
+          chamber = "house";
+          break;
+        case "sjres":
+          examples.push("S.J.Res. 5", "S.J.Res. 28");
+          chamber = "senate";
+          break;
+        case "hconres":
+          examples.push("H.Con.Res. 10", "H.Con.Res. 45");
+          chamber = "house";
+          break;
+        case "sconres":
+          examples.push("S.Con.Res. 3", "S.Con.Res. 18");
+          chamber = "senate";
+          break;
+        case "hres":
+          examples.push("H.Res. 100", "H.Res. 456");
+          chamber = "house";
+          break;
+        case "sres":
+          examples.push("S.Res. 50", "S.Res. 234");
+          chamber = "senate";
+          break;
+      }
+
+      return {
+        code,
+        name: getBillTypeName(code),
+        description: BILL_TYPE_DESCRIPTIONS[code],
+        examples,
+        chamber,
+      };
+    });
+
+    const response: BillTypesResponse = {
+      billTypes,
+      count: billTypes.length,
+      metadata: {
+        lastUpdated: new Date().toISOString(),
+        description:
+          "Complete list of valid bill types in the Congress.gov API with descriptions and examples",
+      },
+    };
+
+    return { contents: formatSuccessResponse(uri, response) };
+  } catch (error) {
+    handleResourceError(uri, error);
+  }
+}
+
+/**
+ * Helper function to get the full name of a bill type
+ */
+function getBillTypeName(code: BillType): string {
+  switch (code) {
+    case "hr":
+      return "House Bill";
+    case "s":
+      return "Senate Bill";
+    case "hjres":
+      return "House Joint Resolution";
+    case "sjres":
+      return "Senate Joint Resolution";
+    case "hconres":
+      return "House Concurrent Resolution";
+    case "sconres":
+      return "Senate Concurrent Resolution";
+    case "hres":
+      return "House Simple Resolution";
+    case "sres":
+      return "Senate Simple Resolution";
+    default:
+      return "Unknown";
   }
 }

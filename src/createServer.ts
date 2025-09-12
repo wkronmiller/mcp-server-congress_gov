@@ -87,6 +87,7 @@ import {
   handleSummariesResource,
   handleHouseVoteResource,
   handleHouseVoteMembersResource,
+  handleBillTypesResource,
 } from "./resourceHandlers.js"; // Placeholder import for resource handlers
 
 /**
@@ -786,6 +787,14 @@ export function createServer(): McpServer {
     extra: RequestHandlerExtra<ServerRequest, ServerNotification>
   ): Promise<ReadResourceResult> => {
     return handleHouseVoteMembersResource(uri.toString(), congressApiService);
+  };
+
+  const readBillTypesCallback = async (
+    uri: URL,
+    variables: Variables,
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>
+  ): Promise<ReadResourceResult> => {
+    return handleBillTypesResource(uri.toString());
   };
 
   // Register Resource Templates (excluding search)
@@ -1585,6 +1594,18 @@ export function createServer(): McpServer {
       mimeType: "application/json",
     },
     readHouseVoteMembersCallback
+  );
+
+  // Reference Resources
+  server.resource(
+    "Bill Types Reference",
+    new ResourceTemplate("congress-gov://bill-types", { list: undefined }),
+    {
+      description:
+        "Complete list of valid bill types with descriptions and examples",
+      mimeType: "application/json",
+    },
+    readBillTypesCallback
   );
 
   // Errors will be handled within the read callbacks by throwing McpError
