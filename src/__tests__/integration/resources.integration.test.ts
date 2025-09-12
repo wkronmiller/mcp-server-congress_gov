@@ -203,6 +203,61 @@ describe("Congress.gov Resources Integration Tests", () => {
       expect(result).toHaveProperty("members");
       expect(Array.isArray(result.members)).toBe(true);
     }, 10000);
+
+    it("should get member sponsored legislation", async () => {
+      const result = await congressApiService.getMemberSponsoredLegislation({
+        bioguideId: testData.members.valid.bioguideId,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("sponsoredLegislation");
+      expect(Array.isArray(result.sponsoredLegislation)).toBe(true);
+    }, 10000);
+
+    it("should get member cosponsored legislation", async () => {
+      const result = await congressApiService.getMemberCosponsoredLegislation({
+        bioguideId: testData.members.valid.bioguideId,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("cosponsoredLegislation");
+      expect(Array.isArray(result.cosponsoredLegislation)).toBe(true);
+    }, 10000);
+
+    it("should get members by state", async () => {
+      const result = await congressApiService.getMembersByState({
+        stateCode: testData.members.valid.stateCode,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("members");
+      expect(Array.isArray(result.members)).toBe(true);
+    }, 10000);
+
+    it("should get members by district", async () => {
+      const result = await congressApiService.getMembersByDistrict({
+        stateCode: testData.members.valid.stateCode,
+        district: testData.members.valid.district,
+      });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("members");
+      expect(Array.isArray(result.members)).toBe(true);
+    }, 10000);
+
+    it("should get members by congress/state/district", async () => {
+      const result = await congressApiService.getMembersByCongressStateDistrict(
+        {
+          congress: testData.members.valid.congress,
+          stateCode: testData.members.valid.stateCode,
+          district: testData.members.valid.district,
+        }
+      );
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty("members");
+      expect(Array.isArray(result.members)).toBe(true);
+    }, 10000);
   });
 
   describe("Error Handling", () => {
