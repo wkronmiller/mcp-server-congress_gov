@@ -19,7 +19,8 @@
   "ts-node": {
     /* ts-node specific options */
     "transpileOnly": true /* Skip type checking for faster execution */,
-    "files": true /* Include files in tsconfig.json */
+    "files": true /* Include files in tsconfig.json */,
+    "esm": true /* Enable ES module support */
   },
   "include": [
     "src/**/*"
