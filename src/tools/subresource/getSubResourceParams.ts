@@ -4,7 +4,10 @@ export const TOOL_NAME = "congress_getSubResource";
 
 export const TOOL_DESCRIPTION = `Fetches related data lists (sub-resources like 'actions', 'cosponsors', 'text') for a specific parent Congress.gov entity. 
 
-**!!! ABSOLUTE PREREQUISITE !!!** You **MUST** provide the exact, complete MCP URI of the parent entity in 'parentUri'. This URI **MUST** be obtained from a prior 'congress_search' or known identifier; guessing will **FAIL**. 
+**URI Requirements:** You must provide the exact, complete MCP URI of the parent entity in 'parentUri'. This URI can be obtained from:
+- Prior 'congress_search' results
+- Known bill/member/committee identifiers (if you have them)
+- Direct construction using the formats shown below 
 
 **Example URIs with Field Explanations:**
 

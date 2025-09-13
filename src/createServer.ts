@@ -1,15 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js"; // Import ResourceTemplate
 import {
-  // ListResourcesRequestSchema, // No longer needed directly here
-  // ReadResourceRequestSchema, // No longer needed directly here
-  ErrorCode,
-  McpError,
-  ResourceContents,
-  ReadResourceRequest, // Keep for type hints if needed elsewhere, maybe not
   ReadResourceResult, // Needed for callback signatures
-  Request,
-  Notification,
   ServerRequest, // Import for type parameters
   ServerNotification, // Import for type parameters
   // Variables // Needed for template callback signatures - Import from specific path
@@ -19,14 +11,6 @@ import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.j
 import { Variables } from "@modelcontextprotocol/sdk/shared/uriTemplate.js";
 import { ConfigurationManager } from "./config/ConfigurationManager.js";
 import { logger } from "./utils/index.js";
-// Import custom errors - will be used inside handlers later
-import {
-  ResourceNotFoundError,
-  ResourceError,
-  ApiError,
-  RateLimitError,
-} from "./utils/errors.js";
-// Import for tool registration
 import { registerTools } from "./tools/index.js";
 import { CongressApiService } from "./services/CongressApiService.js"; // Import service class
 // Resource Handlers (excluding search)
@@ -808,7 +792,7 @@ export function createServer(): McpServer {
     ),
     {
       description:
-        "Information about a specific bill by Congress, type, and number",
+        "Information about a specific bill by Congress, type, and number (e.g. congress-gov://bill/119/S/1). Start here for bill details.",
       mimeType: "application/json",
     },
     readBillCallback

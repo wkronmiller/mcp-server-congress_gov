@@ -4,16 +4,24 @@ export const TOOL_NAME = "congress_search";
 
 export const TOOL_DESCRIPTION = `Searches or lists items within a specified Congress.gov collection (e.g., 'bill', 'member'). 
 
-**!!! CRITICAL WORKFLOW STEP !!!** This tool is **REQUIRED** as the **FIRST STEP** to locate specific entities and retrieve their unique identifiers (like memberId, bill number/type/congress). These identifiers are **ESSENTIAL** inputs for other tools like 'congress_getSubResource'. **FAILURE TO USE THIS FIRST WILL LIKELY CAUSE SUBSEQUENT OPERATIONS TO FAIL.**
+This tool helps you discover and explore congressional data when you need to find specific entities or browse collections. Use it to locate bills, members, committees, and other congressional documents when you don't have the exact identifiers.
 
 **Example Workflow:**
 1. Search for bills: collection='bill', filters={type: 'hr'} to find House Bills
-2. Get bill details: Use returned URI like 'congress-gov://bill/117/hr/21'
-3. Get sub-resources: Use the URI with 'congress_getSubResource' tool
+2. Get bill details: Use returned URI like 'congress-gov://bill/117/hr/21' with resources or sub-resource tools
+3. Get sub-resources: Use the URI with 'congress_getSubResource' tool for related data
+
+**When to Use This Tool:**
+- Finding bills by keyword or topic
+- Discovering members of Congress
+- Browsing committees or reports
+- Exploring collections when exact identifiers are unknown
+
+**Direct Access Alternative:** If you already know specific bill details (congress, type, number), you can directly access resources using URIs like 'congress-gov://bill/117/hr/21' without searching first.
 
 Returns a list; be prepared to handle multiple results and extract the specific ID needed. 
 
-**WARNING:** Filtering by 'congress' using the 'filters' parameter is **NOT SUPPORTED** by the underlying API for general collection searches (e.g., /v3/bill) and will be ignored; congress-specific filtering requires using specific API paths not directly targeted by this tool.`;
+**Note:** Filtering by 'congress' using the 'filters' parameter is not supported by the underlying API for general collection searches (e.g., /v3/bill) and will be ignored; congress-specific filtering requires using specific API paths not directly targeted by this tool.`;
 
 // Define allowed collections based on API documentation
 const SearchableCollectionEnum = z
